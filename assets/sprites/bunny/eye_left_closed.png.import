@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ff4x5aekubws"
-path="res://.godot/imported/eye_left_neutral.png-25d781605c2203de1f7a54c46d801533.ctex"
+uid="uid://cyu3ta00jxvkn"
+path="res://.godot/imported/eye_left_closed.png-5c3e579678f3de93fa9f433e8cb872c2.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/bunny/eye_left_neutral.png"
-dest_files=["res://.godot/imported/eye_left_neutral.png-25d781605c2203de1f7a54c46d801533.ctex"]
+source_file="res://assets/sprites/bunny/eye_left_closed.png"
+dest_files=["res://.godot/imported/eye_left_closed.png-5c3e579678f3de93fa9f433e8cb872c2.ctex"]
 
 [params]
 

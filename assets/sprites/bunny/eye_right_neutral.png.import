@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://b1ls0e0sp0isg"
-path="res://.godot/imported/eye_right_neutral.png-07a22b2998373a1629e9615a46189572.ctex"
+path="res://.godot/imported/eye_right_neutral.png-ff28e756161a75d5dca57335d01350b2.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/bunny/eye_right_neutral.png"
-dest_files=["res://.godot/imported/eye_right_neutral.png-07a22b2998373a1629e9615a46189572.ctex"]
+source_file="res://assets/sprites/bunny/eye_right_neutral.png"
+dest_files=["res://.godot/imported/eye_right_neutral.png-ff28e756161a75d5dca57335d01350b2.ctex"]
 
 [params]
 

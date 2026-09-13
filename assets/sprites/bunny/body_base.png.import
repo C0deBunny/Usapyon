@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bkqnu5vrnvsds"
-path="res://.godot/imported/ear_left.png-021983d10ef89ce5dd7c15ffca04f00d.ctex"
+uid="uid://cn0lvawcdjq5g"
+path="res://.godot/imported/body_base.png-987fb87469dfa98b6274e4b07c61bf41.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/bunny/ear_left.png"
-dest_files=["res://.godot/imported/ear_left.png-021983d10ef89ce5dd7c15ffca04f00d.ctex"]
+source_file="res://assets/sprites/bunny/body_base.png"
+dest_files=["res://.godot/imported/body_base.png-987fb87469dfa98b6274e4b07c61bf41.ctex"]
 
 [params]
 
