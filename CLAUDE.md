@@ -39,8 +39,18 @@ positions are world coordinates you manage yourself.
 - **Save data goes to `user://`** (app-private storage on Android). `res://` is read-only
   in an exported build — never write to it at runtime.
 - **Scenes are referenced by `uid://`**, not paths. Never hand-edit or invent a UID.
+  When adding a node or a script reference by hand, omit `uid=` on the `ext_resource` and
+  omit `unique_id=` on new nodes — Godot resolves the script by path and fills both in on
+  next save. For a script it generates a `.gd.uid` file; commit it alongside the `.gd`.
 - `.tscn`/`.tres` are plain text and diffable, but the editor owns them. Hand-editing is
   fine for simple node setups; anything fiddly, tell the developer what to do in the editor.
+  When hand-editing, `script` is a **property line**, not a node-header attribute:
+	```
+	[node name="Bunny" type="Node2D"]
+	script = ExtResource("9_bunny")
+	```
+	Godot silently ignores unknown header attributes — no import error, no runtime error,
+	the script simply never runs.
 - **Android export**: single preset `Android`, `arm64-v8a` only, non-gradle template,
   output `builds/usapyon-debug.apk`. `builds/` and `.godot/` are gitignored.
 - **Claude cannot run the editor or see the game.** Anything visual or feel-related needs
@@ -51,7 +61,13 @@ positions are world coordinates you manage yourself.
 	"$GODOT" --headless --path "C:/Coding/usa-pyon" --import        # imports + parses scenes
 	"$GODOT" --headless --path "C:/Coding/usa-pyon" --quit-after 120 # catches runtime errors
 	```
-	Godot is not on PATH. This catches broken scenes and script errors, not how it looks.
+	Godot is not on PATH. Both commands exit 0 on a scene whose script was never attached —
+	they prove the scene parses and nothing throws, not that the code ran. To verify
+	behaviour, add a temporary `print()`, run, read the output, then remove it.
+
+	`--quit-after N` counts **frames** and runs at roughly real time headless (1800 frames
+	≈ 14s), so size it to the timing you need to observe. Don't wrap the run in `timeout` —
+	killing the process discards buffered stdout and the prints vanish.
 
 ## Coding rules
 
