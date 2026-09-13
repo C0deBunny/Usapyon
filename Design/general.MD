@@ -1,5 +1,7 @@
 Usapyon — current game concept
 
+**NOTE THAT THIS IS INSPIRARTION AND IS NOT LEADING**
+
 Usapyon is a cute, mobile-first virtual bunny/pet game inspired by Tamagotchi, but designed around a modern smartphone rather than trying to literally recreate an old Tamagotchi.
 
 The core fantasy is simple:

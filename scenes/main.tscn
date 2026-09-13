@@ -1,6 +1,4 @@
-[gd_scene load_steps=2 format=3 uid="uid://dvadwjk1xer4a"]
-
-[ext_resource type="PackedScene" path="res://scenes/bunny/bunny.tscn" id="1_bunny"]
+[gd_scene format=3 uid="uid://dvadwjk1xer4a"]
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -31,6 +29,3 @@ anchor_bottom = 0.5
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-
-[node name="Bunny" parent="BunnyAnchor" instance=ExtResource("1_bunny")]
-position = Vector2(0, 300)
