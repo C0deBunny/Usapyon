@@ -1,0 +1,9 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://autoloads/music.gd" id="1_music"]
+[ext_resource type="AudioStream" uid="uid://cvq8gdknm1q2b" path="res://assets/audio/Usapyon_main.ogg" id="2_track"]
+
+[node name="Music" type="AudioStreamPlayer"]
+stream = ExtResource("2_track")
+bus = &"Music"
+script = ExtResource("1_music")
