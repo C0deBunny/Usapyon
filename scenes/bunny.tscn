@@ -10,6 +10,11 @@
 [ext_resource type="Texture2D" uid="uid://dv8ko5ualh2p5" path="res://assets/bunny/eye_right_closed.png" id="8_1ypmr"]
 [ext_resource type="Texture2D" uid="uid://cyu3ta00jxvkn" path="res://assets/bunny/eye_left_closed.png" id="8_wqkoa"]
 [ext_resource type="Script" uid="uid://b388lfulsp7ml" path="res://scenes/bunny.gd" id="9_bunny"]
+[ext_resource type="Script" uid="uid://cgxgsiwkkbyir" path="res://scenes/ear.gd" id="10_ear"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ear"]
+radius = 134.92065
+height = 421.71442
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_gcsqm"]
 radius = 87.505714
@@ -43,7 +48,7 @@ tracks/1/keys = {
 tracks/2/type = "value"
 tracks/2/imported = false
 tracks/2/enabled = true
-tracks/2/path = NodePath("Visual/EarLeft:rotation")
+tracks/2/path = NodePath("Visual/EarLeftPull/EarLeft:rotation")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
@@ -55,7 +60,7 @@ tracks/2/keys = {
 tracks/3/type = "value"
 tracks/3/imported = false
 tracks/3/enabled = true
-tracks/3/path = NodePath("Visual/EarRight:rotation")
+tracks/3/path = NodePath("Visual/EarRightPull/EarRight:rotation")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/keys = {
@@ -96,7 +101,7 @@ tracks/1/keys = {
 tracks/2/type = "value"
 tracks/2/imported = false
 tracks/2/enabled = true
-tracks/2/path = NodePath("Visual/EarLeft:rotation")
+tracks/2/path = NodePath("Visual/EarLeftPull/EarLeft:rotation")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
@@ -108,7 +113,7 @@ tracks/2/keys = {
 tracks/3/type = "value"
 tracks/3/imported = false
 tracks/3/enabled = true
-tracks/3/path = NodePath("Visual/EarRight:rotation")
+tracks/3/path = NodePath("Visual/EarRightPull/EarRight:rotation")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/keys = {
@@ -129,14 +134,48 @@ script = ExtResource("9_bunny")
 
 [node name="Visual" type="Node2D" parent="." unique_id=1435582226]
 
-[node name="Body" type="Sprite2D" parent="Visual" unique_id=950211253]
-texture = ExtResource("1_kdyof")
+[node name="EarRightPull" type="Node2D" parent="Visual" unique_id=550756198]
+position = Vector2(120, -160)
+script = ExtResource("10_ear")
+max_rotation_degrees = 20.0
+max_stretch = 1.07
 
-[node name="EarRight" type="Sprite2D" parent="Visual" unique_id=2027213403]
+[node name="ClickArea" type="Area2D" parent="Visual/EarRightPull" unique_id=359175602]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Visual/EarRightPull/ClickArea" unique_id=237446678]
+position = Vector2(55, -174)
+rotation = 0.21071717
+shape = SubResource("CapsuleShape2D_ear")
+
+[node name="Tip" type="Marker2D" parent="Visual/EarRightPull" unique_id=618149837]
+position = Vector2(40, -320)
+
+[node name="EarRight" type="Sprite2D" parent="Visual/EarRightPull" unique_id=2027213403]
+position = Vector2(-120, 160)
 texture = ExtResource("2_ggkmg")
 
-[node name="EarLeft" type="Sprite2D" parent="Visual" unique_id=1259995075]
+[node name="EarLeftPull" type="Node2D" parent="Visual" unique_id=489657333]
+position = Vector2(-120, -160)
+script = ExtResource("10_ear")
+max_rotation_degrees = 20.0
+max_stretch = 1.07
+
+[node name="ClickArea" type="Area2D" parent="Visual/EarLeftPull" unique_id=222109138]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Visual/EarLeftPull/ClickArea" unique_id=1623820644]
+position = Vector2(-56, -168)
+rotation = -0.22719061
+shape = SubResource("CapsuleShape2D_ear")
+
+[node name="Tip" type="Marker2D" parent="Visual/EarLeftPull" unique_id=38802122]
+position = Vector2(-40, -320)
+
+[node name="EarLeft" type="Sprite2D" parent="Visual/EarLeftPull" unique_id=1259995075]
+position = Vector2(120, 160)
 texture = ExtResource("3_l787c")
+
+[node name="Body" type="Sprite2D" parent="Visual" unique_id=950211253]
+texture = ExtResource("1_kdyof")
 
 [node name="Face" type="Sprite2D" parent="Visual" unique_id=324641338]
 texture = ExtResource("4_qchqy")
