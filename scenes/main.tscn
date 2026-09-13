@@ -22,3 +22,4 @@ mouse_filter = 2
 color = Color(0.89411765, 1, 1, 1)
 
 [node name="Bunny" parent="." unique_id=1281054210 instance=ExtResource("1_o5qli")]
+position = Vector2(540, 1050)
