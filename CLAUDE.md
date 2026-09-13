@@ -3,7 +3,15 @@
 Cute mobile bunny pet game — Tamagotchi-adjacent but bond-focused, not survival-focused.
 Godot 4.7 / GDScript, Android, portrait.
 
-Full concept and scope ladder: `Design/general.MD`. Read it before proposing gameplay work.
+Design docs, in `Design/`:
+
+- `general.MD` — concept and scope ladder. Read before proposing gameplay work.
+- `Style reference sheet.png` — **the authority on art style.** Palette, proportions,
+  poses, expressions, UI.
+- `bunny-art-brief.md` — how art gets generated (ChatGPT) and brought into the project.
+
+`Design/` carries a `.gdignore` so Godot never imports reference art into the build.
+Keep it that way — a 2 MB style sheet has no business in the APK.
 
 ## Developer context
 
@@ -13,16 +21,16 @@ The developer is a **front-end developer with no game dev experience**. Godot's 
 When introducing a Godot concept, compare it to the web equivalent where that genuinely
 helps. Don't explain general programming.
 
-| Godot | Web equivalent |
-|---|---|
-| Scene (`.tscn`) | Component — a reusable tree you instance |
-| Node | DOM element, but typed (`Sprite2D`, `Area2D`, `Control`) |
-| Script (`.gd`) attached to a node | The component's class/behaviour |
-| Signal | Event listener / emitter |
-| `_process(delta)` | `requestAnimationFrame` |
-| `Tween` / `AnimationPlayer` | CSS transitions / keyframe animations |
-| `user://` files | localStorage |
-| `Control` + anchors/containers | Flex/grid layout |
+| Godot                             | Web equivalent                                           |
+| --------------------------------- | -------------------------------------------------------- |
+| Scene (`.tscn`)                   | Component — a reusable tree you instance                 |
+| Node                              | DOM element, but typed (`Sprite2D`, `Area2D`, `Control`) |
+| Script (`.gd`) attached to a node | The component's class/behaviour                          |
+| Signal                            | Event listener / emitter                                 |
+| `_process(delta)`                 | `requestAnimationFrame`                                  |
+| `Tween` / `AnimationPlayer`       | CSS transitions / keyframe animations                    |
+| `user://` files                   | localStorage                                             |
+| `Control` + anchors/containers    | Flex/grid layout                                         |
 
 Biggest mental shifts worth reinforcing: the **scene tree is the source of truth and the
 editor edits it directly**, and **outside `Control` nodes there is no layout engine** —
@@ -47,6 +55,13 @@ positions are world coordinates you manage yourself.
   output `builds/usapyon-debug.apk`. `builds/` and `.godot/` are gitignored.
 - **Claude cannot run the editor or see the game.** Anything visual or feel-related needs
   the developer to run it — say so explicitly and say what to look for.
+- **But Claude can validate headlessly**, and should before claiming something works:
+  ```
+  GODOT="/c/Users/denze/Downloads/Godot_v4.7.2-stable_win64.exe/Godot_v4.7.2-stable_win64_console.exe"
+  "$GODOT" --headless --path "C:/Coding/usa-pyon" --import        # imports + parses scenes
+  "$GODOT" --headless --path "C:/Coding/usa-pyon" --quit-after 120 # catches runtime errors
+  ```
+  Godot is not on PATH. This catches broken scenes and script errors, not how it looks.
 
 ## Coding rules
 
@@ -60,7 +75,7 @@ positions are world coordinates you manage yourself.
 - GDScript with static typing (`var speed: float = 200.0`) — catches errors and runs faster.
 - `snake_case` for files, variables and functions; `PascalCase` for node names and classes.
 - **Don't build ahead of the current milestone.** `Design/general.MD` sets the scope; the
-  prototype is *bunny on screen → tap → it reacts*. No stats, save system, shop or
+  prototype is _bunny on screen → tap → it reacts_. No stats, save system, shop or
   minigames until asked for.
 
 ## Ask first
@@ -68,3 +83,4 @@ positions are world coordinates you manage yourself.
 - Adding any plugin, addon or external dependency.
 - Changing renderer, resolution or orientation in `project.godot`.
 - Introducing a new architectural pattern (autoload singleton, state machine, resource-driven data).
+- Suggestions to change the design

@@ -1,0 +1,43 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scenes/bunny/bunny.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/bunny/bunny_placeholder.svg" id="2_body"]
+[ext_resource type="Texture2D" path="res://assets/bunny/heart.svg" id="3_heart"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_tap"]
+radius = 260.0
+
+[node name="Bunny" type="Node2D"]
+script = ExtResource("1_script")
+
+[node name="Body" type="Node2D" parent="."]
+
+[node name="Breath" type="Node2D" parent="Body"]
+
+[node name="Sprite" type="Sprite2D" parent="Body/Breath"]
+texture = ExtResource("2_body")
+
+[node name="TapArea" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TapArea"]
+position = Vector2(0, -320)
+shape = SubResource("CircleShape2D_tap")
+
+[node name="Hearts" type="CPUParticles2D" parent="."]
+position = Vector2(0, -470)
+emitting = false
+amount = 10
+one_shot = true
+explosiveness = 0.7
+lifetime = 1.1
+texture = ExtResource("3_heart")
+spread = 40.0
+gravity = Vector2(0, -90)
+initial_velocity_min = 140.0
+initial_velocity_max = 260.0
+angle_min = -35.0
+angle_max = 35.0
+scale_amount_min = 0.5
+scale_amount_max = 1.0
+
+[connection signal="input_event" from="TapArea" to="." method="_on_tap_area_input_event"]
