@@ -6,8 +6,13 @@
 [ext_resource type="Texture2D" uid="uid://clvvqjtnm612r" path="res://assets/bunny/face_neutral.png" id="4_qchqy"]
 [ext_resource type="Texture2D" uid="uid://ff4x5aekubws" path="res://assets/bunny/eye_left_neutral.png" id="5_l787c"]
 [ext_resource type="Texture2D" uid="uid://b1ls0e0sp0isg" path="res://assets/bunny/eye_right_neutral.png" id="6_qchqy"]
-[ext_resource type="Texture2D" uid="uid://cyu3ta00jxvkn" path="res://assets/bunny/eye_left_closed.png" id="7_mfjs7"]
+[ext_resource type="Script" uid="uid://bice745w8urmv" path="res://scenes/eye.gd" id="7_mfjs7"]
 [ext_resource type="Texture2D" uid="uid://dv8ko5ualh2p5" path="res://assets/bunny/eye_right_closed.png" id="8_1ypmr"]
+[ext_resource type="Texture2D" uid="uid://cyu3ta00jxvkn" path="res://assets/bunny/eye_left_closed.png" id="8_wqkoa"]
+[ext_resource type="Script" uid="uid://b388lfulsp7ml" path="res://scenes/bunny.gd" id="9_bunny"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_gcsqm"]
+radius = 87.505714
 
 [sub_resource type="Animation" id="Animation_mfjs7"]
 length = 0.001
@@ -58,59 +63,6 @@ tracks/3/keys = {
 "transitions": PackedFloat32Array(1),
 "update": 0,
 "values": [0.0]
-}
-tracks/4/type = "value"
-tracks/4/imported = false
-tracks/4/enabled = true
-tracks/4/path = NodePath("Visual/EyeLeft:texture")
-tracks/4/interp = 1
-tracks/4/loop_wrap = true
-tracks/4/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [ExtResource("5_l787c")]
-}
-tracks/5/type = "value"
-tracks/5/imported = false
-tracks/5/enabled = true
-tracks/5/path = NodePath("Visual/EyeRight:texture")
-tracks/5/interp = 1
-tracks/5/loop_wrap = true
-tracks/5/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [ExtResource("6_qchqy")]
-}
-
-[sub_resource type="Animation" id="Animation_wqkoa"]
-resource_name = "blink"
-length = 0.15999999999999998
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Visual/EyeLeft:texture")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.08, 0.16),
-"transitions": PackedFloat32Array(1, 1, 1),
-"update": 1,
-"values": [ExtResource("5_l787c"), ExtResource("7_mfjs7"), ExtResource("5_l787c")]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Visual/EyeRight:texture")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.08, 0.16),
-"transitions": PackedFloat32Array(1, 1, 1),
-"update": 1,
-"values": [ExtResource("6_qchqy"), ExtResource("8_1ypmr"), ExtResource("6_qchqy")]
 }
 
 [sub_resource type="Animation" id="Animation_1ypmr"]
@@ -169,11 +121,11 @@ tracks/3/keys = {
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_wqkoa"]
 _data = {
 &"RESET": SubResource("Animation_mfjs7"),
-&"blink": SubResource("Animation_wqkoa"),
 &"idle": SubResource("Animation_1ypmr")
 }
 
 [node name="Bunny" type="Node2D" unique_id=1281054210]
+script = ExtResource("9_bunny")
 
 [node name="Visual" type="Node2D" parent="." unique_id=1435582226]
 
@@ -191,10 +143,31 @@ texture = ExtResource("4_qchqy")
 
 [node name="EyeLeft" type="Sprite2D" parent="Visual" unique_id=1728405519]
 texture = ExtResource("5_l787c")
+script = ExtResource("7_mfjs7")
+closed_texture = ExtResource("8_wqkoa")
+
+[node name="ClickArea" type="Area2D" parent="Visual/EyeLeft" unique_id=1102295215]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Visual/EyeLeft/ClickArea" unique_id=1940269616]
+position = Vector2(-157, 77)
+scale = Vector2(0.8, 1)
+shape = SubResource("CircleShape2D_gcsqm")
 
 [node name="EyeRight" type="Sprite2D" parent="Visual" unique_id=1391211464]
 texture = ExtResource("6_qchqy")
+script = ExtResource("7_mfjs7")
+closed_texture = ExtResource("8_1ypmr")
+
+[node name="ClickArea" type="Area2D" parent="Visual/EyeRight" unique_id=136823869]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Visual/EyeRight/ClickArea" unique_id=1445037497]
+position = Vector2(157, 77)
+scale = Vector2(0.8, 1)
+shape = SubResource("CircleShape2D_gcsqm")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1239645229]
 libraries/ = SubResource("AnimationLibrary_wqkoa")
 autoplay = &"idle"
+
+[node name="BlinkTimer" type="Timer" parent="." unique_id=342912390]
+one_shot = true
