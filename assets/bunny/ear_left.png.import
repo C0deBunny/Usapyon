@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b2jkyfbmk8vgn"
-path="res://.godot/imported/heart.svg-d121940c852c8ed4459243ca2a60bcf3.ctex"
+uid="uid://bkqnu5vrnvsds"
+path="res://.godot/imported/ear_left.png-021983d10ef89ce5dd7c15ffca04f00d.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/bunny/heart.svg"
-dest_files=["res://.godot/imported/heart.svg-d121940c852c8ed4459243ca2a60bcf3.ctex"]
+source_file="res://assets/bunny/ear_left.png"
+dest_files=["res://.godot/imported/ear_left.png-021983d10ef89ce5dd7c15ffca04f00d.ctex"]
 
 [params]
 
@@ -38,6 +38,3 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
-svg/scale=1.0
-editor/scale_with_editor_scale=false
-editor/convert_colors_with_editor_theme=false

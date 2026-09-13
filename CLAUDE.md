@@ -46,12 +46,12 @@ positions are world coordinates you manage yourself.
 - **Claude cannot run the editor or see the game.** Anything visual or feel-related needs
   the developer to run it — say so explicitly and say what to look for.
 - **But Claude can validate headlessly**, and should before claiming something works:
-    ```
-    GODOT="/c/Users/denze/Downloads/Godot_v4.7.2-stable_win64.exe/Godot_v4.7.2-stable_win64_console.exe"
-    "$GODOT" --headless --path "C:/Coding/usa-pyon" --import        # imports + parses scenes
-    "$GODOT" --headless --path "C:/Coding/usa-pyon" --quit-after 120 # catches runtime errors
-    ```
-    Godot is not on PATH. This catches broken scenes and script errors, not how it looks.
+	```
+	GODOT="/c/Users/denze/Downloads/Godot_v4.7.2-stable_win64.exe/Godot_v4.7.2-stable_win64_console.exe"
+	"$GODOT" --headless --path "C:/Coding/usa-pyon" --import        # imports + parses scenes
+	"$GODOT" --headless --path "C:/Coding/usa-pyon" --quit-after 120 # catches runtime errors
+	```
+	Godot is not on PATH. This catches broken scenes and script errors, not how it looks.
 
 ## Coding rules
 

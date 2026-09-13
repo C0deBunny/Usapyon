@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bn4fip3d3ou0s"
-path="res://.godot/imported/bunny_placeholder.svg-2d07be48dd97a238c4edb500cece2610.ctex"
+uid="uid://clvvqjtnm612r"
+path="res://.godot/imported/face_neutral.png-2af25b8a9101d488edaaa203a5b675ad.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/bunny/bunny_placeholder.svg"
-dest_files=["res://.godot/imported/bunny_placeholder.svg-2d07be48dd97a238c4edb500cece2610.ctex"]
+source_file="res://assets/bunny/face_neutral.png"
+dest_files=["res://.godot/imported/face_neutral.png-2af25b8a9101d488edaaa203a5b675ad.ctex"]
 
 [params]
 
@@ -38,6 +38,3 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
-svg/scale=1.0
-editor/scale_with_editor_scale=false
-editor/convert_colors_with_editor_theme=false
