@@ -7,6 +7,26 @@
      - Next: <what remains> / Blocked: <on what>
 -->
 
+## 2026-09-13 (2) — the two editor steps, done
+
+- Did: the `Music` bus now exists — `default_bus_layout.tres`, routed to `Master` at
+  0 dB, unmuted. Master itself is absent from the file because it is all defaults, which
+  is normal and not a missing bus. `Loop` is ticked on `Usapyon_main.ogg`
+  (`loop=true`, `loop_offset=0.0`). Both done by hand in the editor per `decisions.md`
+  4 and 8; both verified here by reading the files back.
+- Verified: the developer ran the project and reports it working. Worth being precise
+  about what that does and does not cover — the report was a general "works as far as I
+  can tell", not a per-item confirmation of the two checks that were asked for (the
+  `Music` node reading `Bus = Music` in the **Remote** scene tree, and the track looping
+  past 2:00). Both of this feature's failure modes are silent and both *sound* correct
+  when broken: a Master fallback is audibly identical, and a missing loop only reveals
+  itself at the 119 s mark. If either turns out wrong later, start here rather than
+  assuming a regression.
+- Next: everything remaining is a judgement call needing time or a device — whether the
+  ~3.5 s fade-out lull grates (`decisions.md` 1), `target_volume_db` through a phone
+  speaker rather than desktop monitors (`decisions.md` 9), and whether audio keeps
+  playing when the app is backgrounded (`decisions.md` 10).
+
 ## 2026-09-13 (1)
 
 - Did: the prerequisite sprite move landed first as its own commit (`c1bfb67`) — the
