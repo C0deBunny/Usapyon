@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Usapyon palette vs. reference strip</title>
+<style>
+  :root {
+    --ink: #24345f;
+    --muted: #8a7279;
+    --outline: #6b4e57;
+    --bg: #fff8f5;
+    --surface: #fffdf9;
+    --rule: #ece0dc;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 48px 40px 64px;
+    background: var(--bg);
+    color: var(--ink);
+    font: 15px/1.55 -apple-system, "Segoe UI", Roboto, system-ui, sans-serif;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; }
+  code { font: 500 .92em ui-monospace, Consolas, monospace; }
+
+  h1 { font-size: 26px; margin: 0 0 6px; letter-spacing: -.01em; }
+  .sub { color: var(--muted); margin: 0 0 42px; font-size: 14px; }
+  h2 {
+    font-size: 12px; text-transform: uppercase; letter-spacing: .1em;
+    color: var(--muted); margin: 0 0 16px; font-weight: 700;
+  }
+  section { margin-bottom: 54px; }
+
+  /* ---- paired swatches ---- */
+  .sidebar {
+    display: grid; grid-template-columns: 74px 1fr; gap: 16px; align-items: start;
+  }
+  .rails { padding-top: 4px; }
+  .rail {
+    height: 96px; display: flex; align-items: center; justify-content: flex-end;
+    font-size: 12px; font-weight: 600; color: var(--muted); text-align: right;
+  }
+  .rail.b { color: #b39ba2; font-weight: 500; }
+  .pairs { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
+  .pair { border: 1px solid var(--rule); border-radius: 14px; overflow: hidden; background: var(--surface); }
+  .chip { height: 96px; display: flex; align-items: flex-end; padding: 9px 11px; }
+  .chip span {
+    font: 700 12px/1 ui-monospace, Consolas, monospace;
+    letter-spacing: .03em; text-transform: uppercase; color: rgba(40,24,32,.55);
+  }
+  .tags { padding: 11px 11px 13px; border-top: 1px solid var(--rule); }
+  .tok { font: 700 11.5px/1.4 ui-monospace, Consolas, monospace; letter-spacing: .05em; }
+  .name { font-size: 12px; color: var(--muted); margin-top: 1px; }
+  .delta { margin-top: 10px; display: flex; gap: 4px; }
+  .d {
+    font: 700 10.5px/1 ui-monospace, Consolas, monospace;
+    padding: 5px 5px; border-radius: 5px; background: #f0e9e6; color: #9b8a88;
+  }
+  .d.big { background: #24345f; color: #fff8f5; }
+
+  /* ---- three cards ---- */
+  .three { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+  .card { background: var(--surface); border: 1px solid var(--rule); border-radius: 16px; padding: 22px 24px 24px; }
+  .card h3 { font-size: 15.5px; margin: 0 0 5px; letter-spacing: -.005em; }
+  .card p { font-size: 12.5px; color: var(--muted); margin: 0 0 20px; min-height: 34px; }
+
+  .row { display: flex; align-items: center; gap: 10px; margin-bottom: 11px; }
+  .row .lbl { width: 50px; font-size: 12px; color: var(--muted); }
+  .bar { flex: 1; height: 18px; position: relative; background: #f2ece9; border-radius: 5px; }
+  .bar .ours { position: absolute; top: 0; bottom: 0; left: 0; border-radius: 5px; }
+  .bar .tick { position: absolute; top: -3px; bottom: -3px; width: 3px; border-radius: 2px; background: var(--ink); }
+  .val { width: 62px; text-align: right; font: 700 11px ui-monospace, Consolas, monospace; color: var(--muted); }
+  .key { margin-top: 16px; font-size: 11.5px; color: var(--muted); display: flex; gap: 14px; }
+  .key i { display: inline-block; width: 11px; height: 11px; border-radius: 3px; vertical-align: -1px; margin-right: 5px; }
+
+  /* ---- orphans ---- */
+  .orphans { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  .ostack { display: flex; gap: 5px; margin-bottom: 14px; flex-wrap: wrap; }
+  .osw { width: 38px; height: 38px; border-radius: 9px; border: 2px solid var(--outline); }
+  .osw.sm { width: 24px; height: 38px; border-radius: 7px; }
+  .ohint { font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+  .ohint b { color: var(--ink); font-weight: 650; }
+
+  footer {
+    padding-top: 22px; border-top: 1px solid var(--rule);
+    font-size: 12.5px; color: var(--muted);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Usapyon accents vs. the reference strip</h1>
+  <p class="sub">Top band is <code>palette.gd</code> today, bottom band is the reference swatch. Deltas are reference minus ours, in HSL.</p>
+
+  <section>
+    <div class="sidebar">
+      <div class="rails">
+        <div class="rail">ours<br>palette.gd</div>
+        <div class="rail b">reference<br>strip</div>
+      </div>
+      <div class="pairs" id="pairs"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Where they actually diverge</h2>
+    <div class="three">
+
+      <div class="card">
+        <h3>Green is the only hue disagreement</h3>
+        <p>120&deg; grass against 154&deg; mint. Every other pair lands within 11&deg;.</p>
+        <svg viewBox="0 0 268 160" width="100%" height="156" role="img" aria-label="Hue arc showing green 34 degrees apart">
+          <defs>
+            <linearGradient id="hg" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#b8d9b8"/>
+              <stop offset="1" stop-color="#b6d8c9"/>
+            </linearGradient>
+          </defs>
+          <path d="M34 128 A100 100 0 0 1 234 128" fill="none" stroke="#f2ece9" stroke-width="15" stroke-linecap="round"/>
+          <path id="seg" fill="none" stroke="url(#hg)" stroke-width="15" stroke-linecap="round"/>
+          <circle id="p1" r="11" fill="#b8d9b8" stroke="#6b4e57" stroke-width="2.5"/>
+          <circle id="p2" r="11" fill="#b6d8c9" stroke="#6b4e57" stroke-width="2.5"/>
+          <text id="t1" font-size="11.5" fill="#8a7279" text-anchor="middle">120&deg; ours</text>
+          <text id="t2" font-size="11.5" fill="#8a7279" text-anchor="middle">154&deg; ref</text>
+          <text x="134" y="152" font-size="13" font-weight="700" fill="#24345f" text-anchor="middle">34&deg; apart</text>
+        </svg>
+      </div>
+
+      <div class="card">
+        <h3>Our warms sit darker</h3>
+        <p>Lightness 0&ndash;100. Theirs is pastel, ours is candy.</p>
+        <div id="lbars"></div>
+        <div class="key"><span><i style="background:#c9b7bd"></i>ours</span><span><i style="background:#24345f"></i>reference</span></div>
+      </div>
+
+      <div class="card">
+        <h3>Our cools sit flatter</h3>
+        <p>Saturation 0&ndash;100. Ours read greyer side by side.</p>
+        <div id="sbars"></div>
+        <div class="key"><span><i style="background:#c9b7bd"></i>ours</span><span><i style="background:#24345f"></i>reference</span></div>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>What we have that the strip doesn't</h2>
+    <div class="orphans">
+      <div class="card">
+        <div class="ostack"><div class="osw" style="background:#f19595"></div></div>
+        <div class="ohint"><b>A seventh accent.</b> <code>RED f19595</code>, the one hue with no counterpart in the reference.</div>
+      </div>
+      <div class="card">
+        <div class="ostack" id="pressed"></div>
+        <div class="ohint"><b>A pressed twin per accent.</b> What the tiles actually consume. The strip carries no state variants.</div>
+      </div>
+      <div class="card">
+        <div class="ostack">
+          <div class="osw" style="background:#fff8f5"></div>
+          <div class="osw" style="background:#fff1e8"></div>
+          <div class="osw" style="background:#e8e0e1"></div>
+        </div>
+        <div class="ohint"><b>A neutral layer.</b> Warm ground, cream secondary, disabled fill.</div>
+      </div>
+      <div class="card">
+        <div class="ostack">
+          <div class="osw" style="background:#6b4e57"></div>
+          <div class="osw" style="background:#24345f"></div>
+          <div class="osw" style="background:#8a7279"></div>
+        </div>
+        <div class="ohint"><b>Ink.</b> Plum outline, navy text, muted text. The strip has no opinion here.</div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Shared weakness: both palettes crush green to <code>S&nbsp;30</code> while yellow sits near <code>S&nbsp;95</code>, so green looks washed out beside it either way.
+  </footer>
+
+</div>
+
+<script>
+const PAIRS = [
+  { tok: 'PINK',   a: '#f6a6c1', b: '#f9c9d7', name: 'Pastel Petal' },
+  { tok: 'ORANGE', a: '#f0b678', b: '#f9c1a5', name: 'Peach Fuzz'   },
+  { tok: 'YELLOW', a: '#f9da7f', b: '#fee4bb', name: 'Wheat'        },
+  { tok: 'GREEN',  a: '#b8d9b8', b: '#b6d8c9', name: 'Ash Grey'     },
+  { tok: 'BLUE',   a: '#c0d3eb', b: '#b7cdf2', name: 'Powder Blue'  },
+  { tok: 'PURPLE', a: '#ccb8de', b: '#d4b5e7', name: 'Wisteria'     }
+];
+const PRESSED = ['#e986aa', '#eca253', '#f7cf58', '#9dcb9d', '#a1bde1', '#b89cd1', '#ec7171'];
+
+function hsl(hex) {
+  const c = [1, 3, 5].map(i => parseInt(hex.substr(i, 2), 16) / 255);
+  const mx = Math.max.apply(null, c), mn = Math.min.apply(null, c);
+  const l = (mx + mn) / 2, d = mx - mn;
+  let s = d ? d / (1 - Math.abs(2 * l - 1)) : 0, h = 0;
+  if (d) {
+    h = mx === c[0] ? ((c[1] - c[2]) / d) % 6
+      : mx === c[1] ? (c[2] - c[0]) / d + 2
+      : (c[0] - c[1]) / d + 4;
+    h *= 60;
+    if (h < 0) h += 360;
+  }
+  return { h: h, s: s * 100, l: l * 100 };
+}
+const sign = n => (n > 0 ? '+' : '') + Math.round(n);
+
+document.getElementById('pairs').innerHTML = PAIRS.map(p => {
+  const A = hsl(p.a), B = hsl(p.b);
+  const ds = [['H', B.h - A.h], ['S', B.s - A.s], ['L', B.l - A.l]]
+    .map(d => '<span class="d' + (Math.abs(d[1]) >= 10 ? ' big' : '') + '">' + d[0] + ' ' + sign(d[1]) + '</span>')
+    .join('');
+  return '<div class="pair">'
+    + '<div class="chip" style="background:' + p.a + '"><span>' + p.a.slice(1) + '</span></div>'
+    + '<div class="chip" style="background:' + p.b + '"><span>' + p.b.slice(1) + '</span></div>'
+    + '<div class="tags"><div class="tok">' + p.tok + '</div>'
+    + '<div class="name">' + p.name + '</div>'
+    + '<div class="delta">' + ds + '</div></div></div>';
+}).join('');
+
+function bars(el, toks, ch) {
+  el.innerHTML = toks.map(tok => {
+    const p = PAIRS.filter(x => x.tok === tok)[0];
+    const A = hsl(p.a)[ch], B = hsl(p.b)[ch];
+    return '<div class="row">'
+      + '<div class="lbl">' + tok.toLowerCase() + '</div>'
+      + '<div class="bar"><span class="ours" style="width:' + A + '%;background:' + p.a + '"></span>'
+      + '<span class="tick" style="left:' + B + '%"></span></div>'
+      + '<div class="val">' + Math.round(A) + ' &rarr; ' + Math.round(B) + '</div></div>';
+  }).join('');
+}
+bars(document.getElementById('lbars'), ['PINK', 'ORANGE', 'YELLOW'], 'l');
+bars(document.getElementById('sbars'), ['BLUE', 'PURPLE'], 's');
+
+document.getElementById('pressed').innerHTML =
+  PRESSED.map(c => '<div class="osw sm" style="background:' + c + '"></div>').join('');
+
+(function () {
+  const cx = 134, cy = 128, r = 100;
+  const pt = deg => {
+    const t = (deg - 100) / 80;
+    const a = Math.PI - t * Math.PI;
+    return [cx + r * Math.cos(a), cy - r * Math.sin(a)];
+  };
+  const p1 = pt(120), p2 = pt(154);
+  document.getElementById('seg').setAttribute('d',
+    'M' + p1[0] + ' ' + p1[1] + ' A' + r + ' ' + r + ' 0 0 1 ' + p2[0] + ' ' + p2[1]);
+  const set = (id, p) => {
+    const e = document.getElementById(id);
+    e.setAttribute('cx', p[0]);
+    e.setAttribute('cy', p[1]);
+  };
+  set('p1', p1); set('p2', p2);
+  const lab = (id, p, dx) => {
+    const e = document.getElementById(id);
+    e.setAttribute('x', p[0] + dx);
+    e.setAttribute('y', p[1] - 19);
+  };
+  lab('t1', p1, -4); lab('t2', p2, 6);
+})();
+</script>
+</body>
+</html>
