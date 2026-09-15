@@ -1,7 +1,25 @@
 # Usapyon
 
-Cute mobile bunny pet game — Tamagotchi-adjacent but bond-focused, not survival-focused.
+Cute mobile pet game — Tamagotchi-adjacent, but progression comes from the
+*quality* of daily care rather than from keeping the pet alive.
 Godot 4.7 / GDScript, Android, portrait.
+
+"Usapyon" is the game and the species. The creature is **a Usapyon** — never a
+pet named Usapyon. Player-facing text says "your Usapyon".
+
+## Where the docs live
+
+| Question | File |
+| --- | --- |
+| What is already built? | `docs/milestones/01-interactive-bunny.md` |
+| What am I building now? | `docs/milestones/02-persistent-pet.md` |
+| How does a system work? | `docs/design/01-game-mechanics.md` |
+| How is the UI built? | `docs/design/04-ui-architecture.md` |
+| How should art/music look? | `docs/design/02-art-direction.md`, `03-music-direction.md` |
+| How do builds, saves and testing work? | `docs/conventions.md` |
+
+Milestones are the only build authority. `docs/design/` is thinking, not
+instructions — see `docs/design/README.md`.
 
 ## Developer context
 
@@ -57,7 +75,7 @@ positions are world coordinates you manage yourself.
   the developer to run it — say so explicitly and say what to look for.
 - **But Claude can validate headlessly**, and should before claiming something works:
 	```
-	GODOT="/c/Users/denze/Downloads/Godot_v4.7.2-stable_win64.exe/Godot_v4.7.2-stable_win64_console.exe"
+	GODOT="/c/Users/denze/Desktop/Godot_v4.7.2-stable_win64.exe/Godot_v4.7.2-stable_win64_console.exe"
 	"$GODOT" --headless --path "C:/Coding/usa-pyon" --import        # imports + parses scenes
 	"$GODOT" --headless --path "C:/Coding/usa-pyon" --quit-after 120 # catches runtime errors
 	```
@@ -80,7 +98,7 @@ positions are world coordinates you manage yourself.
   event buses, data-driven config layers or plugin systems until there is real pain.
 - GDScript with static typing (`var speed: float = 200.0`) — catches errors and runs faster.
 - `snake_case` for files, variables and functions; `PascalCase` for node names and classes.
-- **Don't build ahead of the current milestone.** `Design/general.MD` sets the scope; the
+- **Don't build ahead of the current milestone.** `docs/milestones/` sets the scope; the
   prototype is _bunny on screen → tap → it reacts_. No stats, save system, shop or
   minigames until asked for.
 
