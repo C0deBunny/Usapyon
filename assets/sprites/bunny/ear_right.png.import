@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://mapbgdehfgyt"
-path="res://.godot/imported/ear__right.png-d331fa9b836760873a865c82f1b44dad.ctex"
+path="res://.godot/imported/ear_right.png-78accff9a9dde18bfc0fea1d2ff2b19a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/bunny/ear__right.png"
-dest_files=["res://.godot/imported/ear__right.png-d331fa9b836760873a865c82f1b44dad.ctex"]
+source_file="res://assets/sprites/bunny/ear_right.png"
+dest_files=["res://.godot/imported/ear_right.png-78accff9a9dde18bfc0fea1d2ff2b19a.ctex"]
 
 [params]
 
