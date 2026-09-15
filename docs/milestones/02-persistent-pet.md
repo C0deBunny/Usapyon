@@ -25,7 +25,7 @@ Milestone 2 is complete when this loop works end-to-end:
 | --- | --- |
 | **GameState** | Single source of truth during the current game session |
 | **SaveManager** | Loads and saves player data locally |
-| **BunnyStats** | Contains gameplay rules for hunger, feeding, and time decay |
+| **BunnyCareRules** | Pure gameplay rules for hunger, feeding, and time decay |
 | **Bunny / `bunny.gd`** | Presentation, animations, reactions, and interactions |
 | **DebugPanel** | Developer-only controls for manipulating/testing state |
 | **UI** | Displays hunger and provides feeding controls |
@@ -39,7 +39,7 @@ SaveManager
     ↓
 GameState  ←── single source of truth
     ↓
-BunnyStats / Actions modify state
+Actions apply BunnyCareRules and assign the result back
     ↓
 Bunny + UI react to state
     ↓
@@ -59,10 +59,12 @@ For this milestone, keep the state deliberately small:
 
 ``` text
 GameState
-└── bunny
-    ├── hunger
-    └── last_saved_at
+├── hunger
+└── last_ticked_at
 ```
+
+Flat, not nested under a `bunny` sub-object — there is one creature, and
+`GameState.hunger` is the name every other section here uses.
 
 Later this expands with the rest of the design — cleanliness, happiness, care
 points, care stars, coins, inventory, customization — but none of that is
@@ -86,13 +88,33 @@ Responsibilities:
 ``` text
 load save file
 write save file
-create default/new-player state
 reset save
 ```
+
+Creating the new-player state is **not** SaveManager's job: it calls
+`GameState.reset_to_new()`, which reads `BunnyCareRules.STARTING_HUNGER`. That
+keeps gameplay numbers out of the module about file I/O, and keeps every number
+that decides how the game feels in one file.
 
 Saves go to `user://`, and debug builds write a separate file from release
 builds — see [`../conventions.md`](../conventions.md#save-file-separation) for
 the paths and why they are split.
+
+### File format
+
+``` json
+{"version": 1, "hunger": 72.0, "last_ticked_at": 1757894400}
+```
+
+`version` is one line today and removes the guesswork the first time a field
+changes meaning rather than merely being added. Missing keys read as defaults,
+so a Milestone 2 save still opens in Milestone 3.
+
+Writing is atomic: write `savegame.tmp`, keep the current file as `.bak`, then
+rename the temp over the real file. An Android kill mid-write then leaves either
+the old file or the new one, never half of one. A load that cannot parse the
+main file falls back to `.bak`, and only if that fails too does it start a new
+game. "Your pet vanished" is the worst failure this game has.
 
 ### Startup
 
@@ -122,9 +144,9 @@ the app is backgrounded.
 
 ------------------------------------------------------------------------
 
-## 2.3 — BunnyStats / Gameplay Rules
+## 2.3 — BunnyCareRules / Gameplay Rules
 
-`BunnyStats` contains the rules for changing the care stats.
+`BunnyCareRules` contains the rules for changing the care stats.
 
 ### Hunger reads as fullness
 
@@ -133,13 +155,26 @@ it. Every stat in the game follows this direction — a full bar is always good
 news — so a stat bar can be drawn the same way for all of them without anyone
 having to remember which one is inverted.
 
-For Milestone 2 it only needs concepts such as:
+For Milestone 2 it only needs two functions, both **pure** — they take a hunger
+value and return a new one, and never mention `GameState`:
 
 ``` text
-feed(amount)
-apply_elapsed_time(seconds)
-clamp_hunger()
+fed(hunger, amount) -> float
+decayed(hunger, seconds) -> float
 ```
+
+Pure functions can be checked with a single `print()` and no autoload, no scene
+and no tree, which is exactly the headless verification `CLAUDE.md` asks for
+before claiming something works. The caller assigns the result:
+
+``` gdscript
+GameState.hunger = BunnyCareRules.fed(GameState.hunger, BunnyCareRules.CARROT)
+```
+
+There is no separate `clamp_hunger()`. Clamping to 0–100 happens inside
+`GameState`'s `hunger` setter, so it holds for *every* write — including
+`GameState.hunger = 5` typed straight into the debug panel by someone who has
+never heard of the rule.
 
 Example:
 
@@ -160,10 +195,10 @@ Keep these rules separate from `bunny.gd`.
 ### Responsibility split
 
 ``` text
-GameState   = what your Usapyon's current values ARE
-BunnyStats  = rules for HOW those values change
-Bunny       = how your Usapyon visually reacts
-SaveManager = how those values persist
+GameState      = what your Usapyon's current values ARE (and when they advance)
+BunnyCareRules = rules for HOW MUCH those values change
+Bunny          = how your Usapyon visually reacts
+SaveManager    = how those values persist
 ```
 
 ------------------------------------------------------------------------
@@ -215,17 +250,22 @@ GameState.hunger = 5
 Bunny/UI immediately react
 ```
 
-Time simulation should call the **real gameplay logic**:
+Time simulation should call the **real gameplay logic** — not a parallel copy of
+it. It does that by moving the clock backwards and then letting the ordinary
+catch-up run:
 
 ``` text
 Debug: +6 hours
     ↓
-BunnyStats.apply_elapsed_time(6 hours)
+GameState.last_ticked_at -= 6 hours
+    ↓
+GameState.catch_up_to(now)   ← the same call a cold launch makes
     ↓
 GameState changes
 ```
 
-This ensures the debug panel tests the same logic real players use.
+This ensures the debug panel tests the same logic real players use, structurally
+rather than by anyone remembering to keep the two in step.
 
 ### Debug changes should not automatically save
 
@@ -277,6 +317,12 @@ hunger = 5
 
 Presets inject known values into the runtime `GameState`.
 
+`Fresh` means *completely full*, which is **not** the same as a new game. A new
+Usapyon starts at `BunnyCareRules.STARTING_HUNGER` (70), so the first carrot has
+somewhere to go — and two taps then demonstrate both cases: +20 to 90, then the
+clamp at 100 rather than 110. `Reset Save` is the button that produces that
+new-player state; `Fresh` stays at 100.
+
 This makes it easy to reproduce specific situations without waiting for
 them naturally.
 
@@ -287,20 +333,34 @@ them naturally.
 Store:
 
 ``` text
-last_saved_at
+last_ticked_at
 ```
+
+It records **when time was last accounted for**, which is a different question
+from when the file was last written — and because saves happen only at
+meaningful checkpoints, the two drift apart within a single session. Naming it
+after the save is how you get a session that either loses three hours or charges
+them twice.
 
 When the game loads:
 
 ``` text
-current time - last_saved_at
+current time - last_ticked_at
         ↓
-elapsed time
+elapsed time (a backwards clock clamps to 0)
         ↓
-BunnyStats.apply_elapsed_time()
+GameState.catch_up_to(now)
+        ↓
+BunnyCareRules.decayed(hunger, elapsed)
         ↓
 GameState.hunger decreases
 ```
+
+**Offline progression is not a special case.** `catch_up_to(now)` is the only
+thing that advances the clock, and launch, a 60-second heartbeat, resume from
+background, `Reload From Disk` and the debug time buttons all call it. Offline
+time is then just the ordinary case with a large gap — double-charging the same
+seconds and losing a session's hours are not bugs the code has a shape for.
 
 The game does **not** need to continuously run in the background.
 
@@ -380,7 +440,7 @@ Flow:
 ``` text
 Player feeds carrot
         ↓
-BunnyStats.feed(20)
+GameState.hunger = BunnyCareRules.fed(GameState.hunger, CARROT)
         ↓
 GameState.hunger changes
         ↓
@@ -460,7 +520,7 @@ touches — see [`../conventions.md`](../conventions.md#testing).
 
 ### Offline Progression
 
--   [ ] `last_saved_at` is stored
+-   [ ] `last_ticked_at` is stored
 -   [ ] Elapsed time is calculated correctly
 -   [ ] Hunger decreases according to elapsed time
 -   [ ] Hunger never goes below 0
