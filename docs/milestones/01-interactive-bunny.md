@@ -85,9 +85,38 @@ creature without fighting the per-part transforms underneath it.
 
 ## 1.4 — Idle Animation
 
-An `AnimationPlayer` autoplays a looping 1.6s `idle` animation — a gentle bob on
-`Visual:position`, a barely-there squash on `Visual:scale`, and a ±1.5° counter-
-rotation on each ear sprite.
+An `AnimationPlayer` autoplays a looping 1.6s `idle` animation — a breath, not a
+bounce. `Visual:position` bobs to `-10`, `Visual:scale` inflates to
+`(1.013, 1.02)`, and each ear sprite counter-rotates ±1.7°.
+
+The breath is asymmetric: it inhales over 0.6s, exhales over 0.9s, then holds
+the rest pose for the last 0.1s. That held beat is what reads as breathing
+rather than oscillating. Shaping comes from per-key `transitions` of `-2.0`
+(ease-in-out in Godot's `Math::ease`) on tracks that stay `interp = 1`
+(linear). Cubic interpolation is deliberately *not* used: a catmull-rom arriving
+at the rest key with a non-zero tangent overshoots past the baseline and dips
+the bunny below it.
+
+**The bob is derived, not chosen.** `Visual:scale` pivots on the `Bunny` origin,
+which measures 508px above the body's bottom edge, so `scale.y = s` pushes that
+edge down by `508 × (s − 1)`. Keeping
+
+	bob_y = 508 × (scale_y − 1)
+
+cancels the two, and the bunny's bottom stays planted while the body grows
+upward out of it (measured: 0.16px of drift at the peak, and the head rises
+20.5px). Scale the bob without the squash and the bunny levitates; scale the
+squash without the bob and it sinks as it inhales.
+
+The ear peak sits 0.12s after the body's, so the ears are still rising while the
+body has begun its exhale — follow-through. They have no hold of their own: the
+0.12s lag would push their rest key past the end of the loop, so the ear tracks
+carry three keys and ease into rest exactly on the loop seam. The ease-out has
+them within 3% of rest by the time the body parks at 1.5s, so nothing lingers.
+
+Note that an ear *sprite's* origin resolves back onto the `Bunny` origin,
+121–526px *below* the ear art, so the rotation is a lever: ±1.7° sweeps the tip
+~16px sideways. It is a sway, not a tilt, which is why the angle stays small.
 
 The ear *sprites* carry the idle rotation; the ear *pull nodes* above them carry
 the drag. Two different nodes, so the idle wobble and a finger never write the
