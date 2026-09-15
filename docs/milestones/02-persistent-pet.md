@@ -155,13 +155,28 @@ it. Every stat in the game follows this direction — a full bar is always good
 news — so a stat bar can be drawn the same way for all of them without anyone
 having to remember which one is inverted.
 
-For Milestone 2 it only needs two functions, both **pure** — they take a hunger
-value and return a new one, and never mention `GameState`:
+For Milestone 2 it needs four functions, all **pure** — they take a hunger value
+and return something, and never mention `GameState`:
 
 ``` text
-fed(hunger, amount) -> float
+care_value(hunger)       -> int     the rounded value the game and the player share
+can_eat(hunger, amount)  -> bool    false when the food would overcap
+fed(hunger, amount)      -> float
 decayed(hunger, seconds) -> float
 ```
+
+### The float is a decay accumulator, not the number the game reasons about
+
+Hunger is stored as a float only so decay can accumulate between 60-second
+heartbeats. **Every gameplay rule and every player-facing readout runs on
+`care_value(hunger)`** — the bar, the label and the feed check all derive from
+that one integer, so the screen can never contradict the button. Only
+`decayed()` sees the fraction.
+
+This is why `fed()` is `care_value(hunger) + amount` rather than a plain add: a
+feed then lands on an exact integer, so "feeding never overcaps" is provable
+rather than approximate. The float is still what gets clamped, saved and
+decayed, and the debug panel's `%.1f` readout is the one place it stays visible.
 
 Pure functions can be checked with a single `print()` and no autoload, no scene
 and no tree, which is exactly the headless verification `CLAUDE.md` asks for
@@ -174,7 +189,9 @@ GameState.hunger = BunnyCareRules.fed(GameState.hunger, BunnyCareRules.CARROT)
 There is no separate `clamp_hunger()`. Clamping to 0–100 happens inside
 `GameState`'s `hunger` setter, so it holds for *every* write — including
 `GameState.hunger = 5` typed straight into the debug panel by someone who has
-never heard of the rule.
+never heard of the rule. `MIN_HUNGER` and `MAX_HUNGER` live in `BunnyCareRules`
+rather than in `GameState`, because `can_eat` needs the cap and the rules may
+not name `GameState`. The setter reads them from there.
 
 Example:
 
@@ -438,8 +455,12 @@ The first interaction can be simple:
 Flow:
 
 ``` text
-Player feeds carrot
+Player taps FEED CARROT
         ↓
+GameState.try_feed(CARROT)
+        ↓
+can_eat? ──no──→ nothing happens, return false
+        ↓ yes
 GameState.hunger = BunnyCareRules.fed(GameState.hunger, CARROT)
         ↓
 GameState.hunger changes
@@ -451,7 +472,40 @@ Bunny reacts
 SaveManager saves
 ```
 
+The whole action lives in `GameState.try_feed()`, not in the HUD. `fed` is a
+`GameState` signal, so nothing outside `GameState` should be emitting it — and
+the rule then applies to every future way of feeding, not just this button.
+
 Later this can evolve into physically dragging a carrot onto your Usapyon.
+
+### Feeding is refused when it would overcap
+
+A carrot is worth +20, so it can only be eaten at a `care_value` of 80 or below.
+Above that the button does nothing.
+
+``` text
+care_value(hunger) + amount <= MAX_HUNGER
+```
+
+**Do not write `80` down as a constant.** It is `MAX_HUNGER - CARROT`, and it is
+only correct while carrots are the only food. Derived, the rule gives every
+future food the right window on its own — a +40 lettuce unlocks at 60, +10
+pellets at 90 — and the anti-waste guarantee does not quietly break the first
+time a second crop is added.
+
+The reason this exists is Care Points, which arrive later: CP is earned by
+feeding, so without a gate a player could tap a full Usapyon forever and earn
+unbounded CP. Refusing wasted food bounds it structurally — the total hunger
+restorable in a day is capped by the total that decays.
+
+**This is not the feeding cooldown.** That rule is about *time since eating* and
+is still deferred; see "Not Part of Milestone 2". Eventually a feed will have to
+pass both.
+
+**A refused tap is silent.** The button stays enabled and simply does nothing.
+The design wants the Usapyon itself to refuse — *"Your Usapyon isn't hungry right
+now"* — and that reaction is not Milestone 2 work. Graying the button out would
+be a different decision to undo later, not a step toward it.
 
 ------------------------------------------------------------------------
 
@@ -507,6 +561,9 @@ touches — see [`../conventions.md`](../conventions.md#testing).
 -   [ ] Player can feed one carrot
 -   [ ] Hunger increases by the intended amount
 -   [ ] Hunger cannot exceed 100
+-   [ ] Feeding is refused above a `care_value` of 80, and the tap does nothing
+-   [ ] A refused feed does not react, does not save, and does not move the bar
+-   [ ] The number on screen always predicts whether the button will work
 -   [ ] Hunger UI updates immediately
 -   [ ] Your Usapyon visibly reacts
 -   [ ] Feeding change can be saved
@@ -573,8 +630,13 @@ yet:
     Hunger alone is enough to prove the architecture, and the other two then
     slot into the same pattern.
 -   **The feeding cooldown.** The design says a fed Usapyon stays full for a
-    couple of hours. Milestone 2 deliberately allows repeat feeding so the loop
-    stays easy to test; the cooldown lands with the real feeding UI.
+    couple of hours *after eating*. That is a rule about elapsed time and it
+    lands with the real feeding UI. Do not confuse it with §2.8's overcap
+    refusal, which is a rule about wasted food and is built: both will
+    eventually apply, and a feed will have to pass each. Note that the overcap
+    rule already acts as a de-facto cooldown of about five hours from full — at
+    4 hunger/hour it takes that long to fall from 100 back to 80 — so the two
+    will compound rather than overlap.
 -   **Care Points and Care Stars.** The whole progression layer waits until
     there are three stats to earn CP from.
 -   Automatic day/night sleep

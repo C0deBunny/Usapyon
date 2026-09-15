@@ -20,9 +20,6 @@ signal changed
 ## cannot end up bouncing happily because it got hungrier.
 signal fed
 
-const MIN_HUNGER: float = 0.0
-const MAX_HUNGER: float = 100.0
-
 ## Long enough to cost nothing, short enough that an unsaved gap stays small.
 const HEARTBEAT_SECONDS: float = 60.0
 
@@ -35,7 +32,9 @@ var _hunger: float = BunnyCareRules.STARTING_HUNGER
 ## enforce would let that write skip both.
 var hunger: float:
 	set(value):
-		var clamped: float = clampf(value, MIN_HUNGER, MAX_HUNGER)
+		var clamped: float = clampf(
+			value, BunnyCareRules.MIN_HUNGER, BunnyCareRules.MAX_HUNGER
+		)
 		# Silence when nothing moved: once hunger sits at 0 the heartbeat would
 		# otherwise announce no change sixty times an hour.
 		if is_equal_approx(clamped, _hunger):
@@ -72,6 +71,27 @@ func catch_up_to(current_time: int) -> void:
 	var elapsed: int = maxi(0, current_time - last_ticked_at)
 	hunger = BunnyCareRules.decayed(hunger, float(elapsed))
 	last_ticked_at = current_time
+
+
+## Eats `amount`, if the Usapyon has room for all of it. Returns whether it ate.
+##
+## The whole action lives here rather than in the button that happens to trigger
+## it today, because `fed` is this object's signal and nothing outside should be
+## emitting it — and because dragging a carrot onto the Usapyon, which the
+## milestone already anticipates, would otherwise have to repeat the rule.
+##
+## Refusing a feed that would overcap is what stops food being wasted, and later
+## what stops Care Points being farmed by tapping a full Usapyon forever. The
+## limit is not a threshold anyone wrote down: it comes from the food's own size.
+##
+## The return value is unused today. It is what a refusal reaction will read.
+func try_feed(amount: float) -> bool:
+	if not BunnyCareRules.can_eat(hunger, amount):
+		return false
+	hunger = BunnyCareRules.fed(hunger, amount)
+	fed.emit()
+	SaveManager.save()
+	return true
 
 
 ## A brand-new Usapyon. The starting value is a gameplay number, so it comes from

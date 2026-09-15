@@ -304,3 +304,130 @@ depends on the ones above it.
   calls `GameState.reset_to_new()`.
 - **Trade-off:** a new folder holding one file. It has an obvious future — the other care
   stats' rules land beside it.
+
+## 21. Feeding is gated on overcap, not on a cooldown
+
+- **Date:** 2026-09-15
+- **Considered:** leave repeat feeding unrestricted as the milestone allows · bring the
+  design's ~2-hour "isn't hungry right now" timer forward · block feeding whenever the
+  food would push hunger past 100
+- **Chosen:** the overcap gate. This is **not** the design's feeding cooldown arriving
+  early — it answers a different question. `docs/design/01-game-mechanics.md` §7 defers
+  spam by *time since eating*; this defers it by *whether the food would be wasted*. Both
+  will eventually exist and a feed will have to pass both. The reason to build this one
+  now is Care Points: CP is earned by feeding, so a player who taps a full Usapyon forever
+  earns unbounded CP. The overcap gate bounds it structurally — total hunger restorable
+  per day is capped by total decay (96 points at 4/hour), so no amount of tapping produces
+  more.
+- **Trade-off:** it is a de-facto cooldown as a side effect, and a longer one than the
+  design's. Feed at 80, land on 100, and at 4/hour the button is dead for **five hours**.
+  Nobody chose five; it falls out of `CARROT` and `DECAY_PER_HOUR` multiplying together.
+  Worth watching once the real cooldown lands, because the two rules will compound.
+- **Left open, for the design doc rather than the code:** this only bounds CP if **CP is
+  earned per hunger point restored**. Per *feeding event* it inverts the incentive — free
+  pellets at +10 unlock at 90 and can be fed roughly every 2.5 hours, while a carrot
+  unlocks at 80 and goes every 5 — so the weakest free food would farm the most CP.
+
+## 22. The threshold is derived from the food, never a constant
+
+- **Date:** 2026-09-15
+- **Considered:** `const NOT_HUNGRY = 80.0` beside `CARROT` · derive it from the food's
+  own value · derive it with a small waste allowance
+- **Chosen:** derive. `80` is not a number in its own right, it is `MAX_HUNGER - CARROT`,
+  and writing it down as a constant is only correct while carrots are the only food. The
+  garden in `docs/design/01-game-mechanics.md` already names lettuce as "very filling";
+  under a fixed 80 a +40 lettuce fed at 78 wastes 18 points and still pays full CP, which
+  is the exact loophole decision 21 exists to close. `can_eat(hunger, amount)` closes it
+  for every food that will ever be added, with no constant to maintain — carrot unlocks at
+  80, a +40 lettuce at 60, +10 pellets at 90, all for free.
+- **Trade-off:** filling foods become *harder* to use than weak ones, which is the
+  opposite of how an upgrade usually reads. That is the correct behaviour for an
+  anti-waste rule but it is a real UX shape, and it is the mechanism behind the CP
+  inversion flagged in decision 21.
+- **Declined:** a waste allowance (`<= MAX + SLOP`). A second number to tune, guarding
+  against a discomfort — sitting at 81 unable to act — that the rounding in decision 23
+  already makes invisible.
+
+## 23. Rounded integers are the game's currency; the float is a decay accumulator
+
+- **Date:** 2026-09-15
+- **Considered:** keep every calculation on the float and round only in the label ·
+  round in the gate but add on the float · make the rounded integer the value that
+  gameplay and UI both operate on
+- **Chosen:** the rounded integer, everywhere except decay. The float exists so decay can
+  accumulate between 60-second heartbeats; it is not a number the game or the player
+  reasons about. Two problems fall away at once. The label prints `roundi(hunger)`, so at
+  79.6 it reads "Hunger 80" and the button works, while at 80.4 it reads "Hunger 80" and
+  the button does nothing — with a silent no-op (decision 26) there is no way to tell
+  those apart, and the player's arithmetic (80 + 20 = 100) is correct and ignored. And
+  gating on the rounded value while adding on the float leaves 80.4 + 20 = 100.4 clamped
+  back to 100, so "never overcap" would be only approximately true. Gate *and* add on the
+  rounded value and the result is an exact integer ≤ 100 every time: the guarantee becomes
+  provable, and the clamp becomes unreachable from feeding.
+- **Consequence:** `fed()` is `care_value(hunger) + amount`, so feeding discards the
+  fractional part. `roundi` rounds half away from zero, so the error is ±0.5 and
+  symmetric — expected drift over many feeds is zero, against 96 points of decay a day.
+- **Consequence:** the `ProgressBar` reads `care_value` too, so bar, label and button can
+  never disagree. No visible difference: at 4/hour a heartbeat moves the bar 0.067% either
+  way.
+- **Deliberately excluded:** the debug panel keeps `Hunger: %.1f`. It is a developer
+  instrument, not player-facing UI, and it is the only window onto the float — precisely
+  the thing that would reveal a rounded value leaking into stored state. The panel's
+  direct `GameState.hunger` writes stay on the float and stay outside the gate; debug
+  *should* bypass gameplay rules.
+- **Trade-off:** "which number is real" now has a two-part answer. Mitigated by there
+  being exactly one function, `care_value()`, that anyone can follow.
+
+## 24. `MIN_HUNGER` / `MAX_HUNGER` move to `BunnyCareRules`
+
+- **Date:** 2026-09-15
+- **Considered:** leave them in `GameState` and pass the cap into `can_eat` · leave them
+  and let `GameState` do the comparison itself · move them to `BunnyCareRules`
+- **Chosen:** move. `can_eat` needs the cap, and decision 9 makes the rules pure — they
+  may not name `GameState`. Passing the cap in preserves purity but lets the clamp and the
+  gate silently disagree, since two call sites would each supply their own 100. Letting
+  `GameState` compare leaks "how much things change" back out of the rules file that
+  decision 20 exists to concentrate it in. The bounds are pacing numbers like
+  `DECAY_PER_HOUR`; they belong in the file you open to tune the game. The `GameState`
+  setter now clamps with `BunnyCareRules.MIN_HUNGER` / `MAX_HUNGER`.
+- **Trade-off:** one more indirection in the setter, and `GameState` no longer states its
+  own range. There was exactly one call site, so the move was mechanical.
+
+## 25. `GameState.try_feed()` owns the feed action
+
+- **Date:** 2026-09-15
+- **Considered:** a two-line guard at the top of the `hud.gd` handler · move the whole
+  action into `GameState.try_feed(amount) -> bool`
+- **Chosen:** `try_feed`. The deciding argument is not future-proofing — it is that `fed`
+  is a `GameState` signal that `GameState` never emits. `hud.gd` reaches into another
+  object and fires its signal on its behalf, and adding the rule would make a script whose
+  own docstring calls itself "the hunger display and the one feeding control" the sole
+  authority on when feeding is legal. Three things already on the map land on this branch:
+  §2.8's "later this can evolve into physically dragging a carrot onto your Usapyon" is a
+  second caller; cleanliness and happiness "slot into the same pattern", which in `hud.gd`
+  means three gameplay rules in a display script; and CP is awarded on a *successful*
+  feed, which is the branch `try_feed` already owns. It is roughly eight lines **moved**,
+  not added, and it worsens no coupling — `GameState._notification()` already calls
+  `SaveManager.save()`, and `SaveManager._ready()` already writes into `GameState`.
+- **Trade-off:** `GameState` grows a verb, having been mostly values and a clock. Decision
+  6's boundary still holds: it decides *whether* and *when*, never *by how much*.
+- **Also decided here:** it returns `bool`. Nothing consumes it today; it is what a
+  refusal reaction will read.
+
+## 26. A blocked tap is a silent no-op
+
+- **Date:** 2026-09-15
+- **Considered:** disable the button · keep it live and have the Usapyon visibly refuse ·
+  keep it live and do nothing
+- **Chosen:** live and doing nothing, for now. `docs/design/01-game-mechanics.md` §7 wants
+  "*Your Usapyon isn't hungry right now*" — a message, not a dead control — and the
+  refusal belongs with the Usapyon, not with a greyed rectangle. That animation is not
+  Milestone 2 work, and disabling the button in the meantime would be a *different*
+  decision to undo later rather than a step toward it. The `Button` still shows its
+  pressed style, so a tap is not entirely unacknowledged.
+- **Trade-off:** for now a blocked tap is indistinguishable from a missed one, which is
+  the kind of thing a tester reports as a bug. Decision 23 is what makes it survivable:
+  the number on screen always predicts what the button will do, so the player can at least
+  see *that* they are full even without being told.
+- **Consequence:** `hud.gd` never touches `disabled`, and `_refresh()` stays a pure
+  redraw.

@@ -7,6 +7,74 @@
      - Next: <what remains> / Blocked: <on what>
 -->
 
+## 2026-09-15 (3) — feeding refuses to overcap
+
+- Did: added the overcap gate and, with it, a rule about which number the game
+  actually reasons in. Decided in a `/grill-me` session; `decisions.md` 21–26.
+  `docs/milestones/02-persistent-pet.md` was reconciled first, as in entry (1),
+  since `CLAUDE.md` makes it the only build authority.
+- The change in one sentence: **the stored float is a decay accumulator, and
+  everything else — every gameplay rule and every player-facing readout — runs on
+  `BunnyCareRules.care_value(hunger)`.**
+  - `care_value()`, `can_eat()`, `MIN_HUNGER` and `MAX_HUNGER` are new in
+    `bunny_care_rules.gd`; the bounds moved out of `game_state.gd`, which had
+    exactly one call site.
+  - `fed()` is now `care_value(hunger) + amount`, so a feed lands on a whole
+    number.
+  - `GameState.try_feed(amount) -> bool` is new and owns the whole action. The
+    feed no longer happens in `hud.gd`, which had been emitting another object's
+    `fed` signal on its behalf.
+  - `hud.gd` is down to a one-line handler; bar and label both read `care_value`.
+- **There is no `80` anywhere in the code.** The gate is
+  `care_value(hunger) + amount <= MAX_HUNGER`, so the threshold is a consequence
+  of the food's size. Verified by sweep, below.
+- Verified by temporary instrumentation in `main.gd`, then removed and the file
+  confirmed byte-identical to `HEAD`. Every number below is from that run:
+  - **Derivation.** Sweeping every integer 0–100 for each food size: +10 unlocks
+    at and below 90, +20 at 80, +40 at 60. Nothing was retuned to get that.
+  - **The guarantee is provable, not approximate.** Across 0.0–100.0 at 0.1
+    resolution, the number of allowed feeds that would still exceed 100 is **0**.
+    The setter's clamp is now genuinely unreachable from feeding — which is why
+    `fed()`'s "deliberately uncapped" comment was rewritten rather than deleted:
+    it is still true of the function, just no longer exercised.
+  - **The label never lies about the button.** `care_value` 79.4→79, 79.6→80,
+    80.4→80, 80.5→81. `can_eat` is true at 80.4 and false at 80.5, which is the
+    same place the displayed number crosses. Both 79.6 and 80.4 display as
+    "Hunger 80" and both feed, landing on exactly 100.0.
+  - **A refused feed is inert.** At hunger 95, `try_feed` returned false, the
+    connected `changed` and `fed` listeners recorded `[]` — neither fired — and
+    hunger stayed 95.0. So no save, no bounce, no bar movement.
+  - **Decay still reads the float**, which is the thing that had to not break:
+    `decayed(100, 60s) = 99.933`. Rounding there would have rounded every
+    heartbeat back to where it started and time would have stopped. 1 h → 96.0
+    and 25 h → 0.0 exactly, both unchanged from entry (2).
+  - **The setter still clamps** through the relocated bounds: 150 → 100.0,
+    −50 → 0.0.
+- Leak baseline unchanged at `4 ObjectDB instances` / `2 resources still in use`
+  — still the `Music` autoload, still not a regression.
+- Worth knowing for the next session: a new game at `STARTING_HUNGER = 70` now
+  takes **one** carrot to 90 and refuses the second. `decisions.md` 17 chose 70 to
+  demonstrate an uncapped add then a clamp; it now demonstrates an allowed feed
+  then a refusal. Two taps either way, so 70 was left alone and its comment
+  rewritten.
+
+### What could not be verified from here
+
+Both are additions to entry (2)'s list, not replacements — everything there still
+stands.
+
+1. **Whether a silent refusal reads as broken.** `decisions.md` 26 accepts that a
+   blocked tap is indistinguishable from a missed one for now. On the phone: feed
+   once from a new game, then tap again. The button still shows its pressed
+   style, and the bar says 90 with a carrot worth 20 — the question is whether
+   that is enough to explain itself, or whether the refusal reaction needs to
+   come forward rather than wait for the real feeding UI.
+2. **Whether five hours of dead button is acceptable pacing.** Feeding at 80
+   lands on 100, and at 4/hour that is five hours before the button works again.
+   Nobody chose five; it falls out of `CARROT` and `DECAY_PER_HOUR`. This needs
+   real days, like the decay rate itself, and it compounds with the ~2-hour
+   cooldown when that arrives.
+
 ## 2026-09-15 (2) — the milestone, built
 
 - Did: the whole care loop (`72b149e`). `systems/bunny_care_rules.gd`,

@@ -19,7 +19,13 @@ garden, coins, shop, cosmetics, minigames, multiple foods, full inventory, advan
 eating animations, production-quality stat UI. There is no Energy stat and no Affection
 meter in the design; do not add them.
 
-Three further boundaries were drawn during planning, inside what the milestone allows:
+The **feeding cooldown remains a non-goal** — the design's ~2-hour "isn't hungry right
+now" timer still waits for the real feeding UI. What *was* added, late and deliberately,
+is a different rule that happens to look similar: feeding is refused when the food would
+push hunger past 100. That is an anti-waste guard against unbounded Care Points, not a
+timer, and both rules will eventually apply. See `decisions.md` 21.
+
+Four further boundaries were drawn during planning, inside what the milestone allows:
 
 - **The Usapyon does not look hungry.** It idles identically at hunger 100 and hunger 4;
   only the bar differs. `assets/sprites/bunny/` contains exactly one face
@@ -30,6 +36,11 @@ Three further boundaries were drawn during planning, inside what the milestone a
   track, and there is no SFX bus. See `decisions.md` 15.
 - **No anti-cheat on the device clock.** Moving the phone's clock forward genuinely skips
   time. Single-player game, nobody to cheat. See `decisions.md` 3.
+- **A refused feed says nothing.** The button stays enabled and a tap on a full Usapyon
+  simply does nothing. The design wants the Usapyon itself to refuse — "*Your Usapyon
+  isn't hungry right now*" — and that animation is not Milestone 2 work. Greying the
+  button out would be a different decision to undo later, not a step toward it.
+  See `decisions.md` 26.
 
 ## Context
 
@@ -110,6 +121,17 @@ actions and not off a timer.
 happen on every write including `GameState.hunger = 5` from the debug panel. The
 invariant cannot be skipped by a caller who does not know about it.
 
+The second load-bearing idea arrived later: **the float is a decay accumulator, not the
+number the game reasons about.** Every gameplay rule and every player-facing readout goes
+through `BunnyCareRules.care_value(hunger) -> int`; only `decayed()` sees the fraction.
+That single choice settles two things at once. The bar, the label and the feed button all
+derive from one integer, so the screen can never contradict the button — which matters
+because a refused tap is silent, and "Hunger 80" that does nothing while "Hunger 80" that
+works are otherwise indistinguishable. And because the gate *and* the addition both run on
+the rounded value, a feed lands on an exact integer ≤ 100 every time: "never overcap" is
+provable rather than approximate, and the setter's clamp becomes unreachable from feeding.
+See `decisions.md` 23.
+
 ## Components
 
 - **`autoloads/game_state.gd`** (new) — `hunger: float` as a property over `_hunger`,
@@ -118,13 +140,20 @@ invariant cannot be skipped by a caller who does not know about it.
   `last_ticked_at: int`. Owns the 60-second `Timer`, `catch_up_to()`, and
   `_notification()` for `NOTIFICATION_APPLICATION_PAUSED` (save) and
   `NOTIFICATION_APPLICATION_RESUMED` (catch up). Signals: `changed` for anything that
-  redraws, `fed` for the one moment that deserves a reaction. Also `reset_to_new()`.
+  redraws, `fed` for the one moment that deserves a reaction. Also `reset_to_new()`, and
+  `try_feed(amount) -> bool` — the whole feed action, so the rule, the write, the signal
+  and the save are one call any interaction can make (`decisions.md` 25).
 
 - **`systems/bunny_care_rules.gd`** (new) — `class_name BunnyCareRules`, static functions
   only, never names `GameState`. `STARTING_HUNGER = 70.0`, `DECAY_PER_HOUR = 4.0`,
-  `CARROT = 20.0`. `fed(hunger, amount) -> float` and `decayed(hunger, seconds) -> float`.
-  Testable with a `print()` and no scene tree, which is exactly the headless verification
-  `CLAUDE.md` asks for. This is the file you open to change how the game feels.
+  `CARROT = 20.0`, and `MIN_HUNGER` / `MAX_HUNGER`, which live here rather than in
+  `GameState` so that `can_eat` can stay pure (`decisions.md` 24).
+  `care_value(hunger) -> int` is the rounded value gameplay and the UI both run on;
+  `can_eat(hunger, amount) -> bool` refuses a feed that would overcap — derived from the
+  food, so there is no `80` anywhere and a future lettuce gets the right window for free;
+  `fed(hunger, amount) -> float` and `decayed(hunger, seconds) -> float`. Testable with a
+  `print()` and no scene tree, which is exactly the headless verification `CLAUDE.md` asks
+  for. This is the file you open to change how the game feels.
 
 - **`autoloads/save_manager.gd`** (new) — writes `savegame.tmp` then renames over the
   real file; the previous file is kept as `.bak` first. Load tries the main file, falls
@@ -153,7 +182,9 @@ invariant cannot be skipped by a caller who does not know about it.
   value `Label` anchored top-centre at roughly y=120, clear of the Usapyon (centre
   y=1050, ears reaching to about y=730). A `FEED CARROT` button in the bottom thumb
   zone. Every non-interactive node set to `mouse_filter = IGNORE` so the touch surface
-  is as small as possible. Display rounds to a whole number; the float stays internal.
+  is as small as possible. Bar and label both read `care_value()`, so neither can
+  contradict the button; the float stays internal and is never written back. The button
+  is never disabled — when the Usapyon is too full, the tap is simply a no-op.
 
 - **`scenes/debug_panel.tscn`** (new) — instanced into `main.tscn` only when
   `OS.is_debug_build()`, hidden by default, toggled by a small 🛠 button top-right.
@@ -161,13 +192,26 @@ invariant cannot be skipped by a caller who does not know about it.
   and the `Fresh` / `Hungry` presets. Debug edits never write the file; only
   Save Current State does.
 
-The feed action is the milestone's own flow diagram read top to bottom:
+The feed action is the milestone's own flow diagram read top to bottom, with the overcap
+gate in front of it — and it lives in `GameState`, not in the HUD, because `fed` is a
+`GameState` signal and nothing outside `GameState` should be firing it:
+
+```gdscript
+# game_state.gd
+func try_feed(amount: float) -> bool:
+	if not BunnyCareRules.can_eat(hunger, amount):
+		return false
+	hunger = BunnyCareRules.fed(hunger, amount)
+	fed.emit()
+	SaveManager.save()
+	return true
+```
+
+which leaves `hud.gd` with a one-line handler:
 
 ```gdscript
 func _on_feed_pressed() -> void:
-	GameState.hunger = BunnyCareRules.fed(GameState.hunger, BunnyCareRules.CARROT)
-	GameState.fed.emit()
-	SaveManager.save()
+	GameState.try_feed(BunnyCareRules.CARROT)
 ```
 
 ## Reconciling the milestone doc
@@ -186,6 +230,8 @@ the authority does not meet names this plan has replaced:
 | §2.5 | `Fresh Bunny → hunger = 100` only | `Fresh` stays 100, and a *new game* starts at 70 — they are different states (`decisions.md` 17) |
 | §2.2 | SaveManager creates default state | `GameState.reset_to_new()` reads `BunnyCareRules.STARTING_HUNGER` (`decisions.md` 20) |
 | §2.2 | plain JSON | `version` field, atomic write, rolling `.bak` (`decisions.md` 11) |
+| §2.3, §2.8 | feeding always succeeds | feeding is refused when it would overcap; `can_eat` and `care_value` join the rules module (`decisions.md` 21, 22, 23) |
+| "Not Part of Milestone 2" | "deliberately allows repeat feeding" | the *cooldown* is still deferred; the overcap guard is not the cooldown (`decisions.md` 21) |
 
 ## Risks
 
@@ -216,9 +262,12 @@ the authority does not meet names this plan has replaced:
   `docs/plans/background-music/progress.md`. **Do not read those two lines as a
   regression from this work.** If the count rises above 4, that is new.
 
-- **Hunger is a float and JSON round-trips it.** 72.4 saves and loads as 72.4; the
-  display rounds. Confirm nothing in the UI or the debug panel quietly writes the
-  rounded value back into `GameState`.
+- **Hunger is a float and JSON round-trips it.** 72.4 saves and loads as 72.4. Since
+  `decisions.md` 23, feeding *deliberately* writes a rounded value back — 72.4 + a carrot
+  is 92.0, not 92.4 — so the thing to confirm is narrower than it was: no *display* path
+  may write, and decay must keep running on the float. The debug panel's `%.1f` readout is
+  the instrument for both; if it ever shows a whole number after a `+1h`, something has
+  rounded that should not have.
 
 ## Open questions
 
