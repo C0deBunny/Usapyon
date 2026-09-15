@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://cmfm7s076hm3d"]
 
 [ext_resource type="Script" uid="uid://c536jxne2xqpy" path="res://scenes/hud.gd" id="1_hud"]
-[ext_resource type="Theme" uid="uid://c3omiob58or5q" path="res://scenes/ui/theme/usapyon_theme.tres" id="2_theme"]
+[ext_resource type="Theme" path="res://scenes/ui/theme/usapyon_theme.tres" id="2_theme"]
 [ext_resource type="PackedScene" path="res://scenes/ui/tile_button.tscn" id="3_tile"]
 [ext_resource type="Texture2D" uid="uid://ti2xdyqt48nl" path="res://assets/sprites/ui/carrot.png" id="4_carrot"]
 
