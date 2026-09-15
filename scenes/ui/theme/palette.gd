@@ -33,11 +33,11 @@ const DISABLED: Color = Color("e8e0e1")
 const RED: Color = Color("f19595")
 const RED_PRESSED: Color = Color("ec7171")
 
-const BLUE: Color = Color("c0d3eb")
-const BLUE_PRESSED: Color = Color("a1bde1")
+const BLUE: Color = Color("b7cdf2")
+const BLUE_PRESSED: Color = Color("94b5ec")
 
-const PURPLE: Color = Color("ccb8de")
-const PURPLE_PRESSED: Color = Color("b89cd1")
+const PURPLE: Color = Color("d4b5e7")
+const PURPLE_PRESSED: Color = Color("c296dd")
 
 const GREEN: Color = Color("b8d9b8")
 const GREEN_PRESSED: Color = Color("9dcb9d")
