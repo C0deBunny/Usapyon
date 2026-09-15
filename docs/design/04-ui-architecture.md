@@ -668,7 +668,10 @@ res://
 │
 ├── assets/
 │   ├── sprites/
-│   │   └── bunny/   the layered rig
+│   │   ├── bunny/        the layered rig
+│   │   ├── ui/           flat icons — carrot, coin, heart, cog …
+│   │   └── background/   room art
+│   ├── fonts/
 │   └── audio/
 │
 └── docs/            design notes, milestones, plans (.gdignore'd)
@@ -680,8 +683,10 @@ Two things differ from the common Godot tutorial layout, on purpose:
   scene and its behaviour are one component.
 - **`assets/`**, not `art/` — audio lives there too.
 
-When UI arrives it slots in as `scenes/ui/` with its own scripts, and its art as
-`assets/sprites/ui/`. Add folders only when something actually needs them.
+UI lives in `scenes/ui/` with its own scripts, and its art in
+`assets/sprites/ui/`. Every sprite category is a folder under `assets/sprites/`;
+`fonts/` and `audio/` sit beside it because they are not sprites. Add folders
+only when something actually needs them.
 
 ---
 
