@@ -4,9 +4,11 @@ extends Button
 
 ## One care action: an icon above a caption.
 ##
-## Shape, border and resting colour come from the theme's TileButton variation.
-## Only [member accent] is per-tile, because the tiles all rest cream and take on
-## their action's colour only while held.
+## Shape, border and colour come from the theme's TileButton variation, which is
+## the secondary button in a squarer shape.
+##
+## Only [member accent] is per-tile: leave it alone and the tile presses secondary
+## like any other button, or set it to give this one action its own held colour.
 ##
 ## It is a Button rather than a Control wrapping one, so callers still get
 ## [signal BaseButton.pressed] and every other button behaviour for free.
@@ -20,8 +22,8 @@ extends Button
 ## Named icon_texture, not icon, so it does not shadow [member Button.icon].
 @export var icon_texture: Texture2D = null: set = _set_icon_texture
 
-## Fill while held. One of Palette's ACCENT_ constants.
-@export var accent: Color = Palette.ACCENT_FEED: set = _set_accent
+## Fill while held. One of Palette's _PRESSED colours.
+@export var accent: Color = Palette.SECONDARY_PRESSED: set = _set_accent
 
 @onready var _icon: TextureRect = %Icon
 @onready var _caption: Label = %Caption
@@ -63,7 +65,7 @@ func _refresh() -> void:
 	_caption.text = caption
 	_caption.add_theme_font_override(&"font", get_theme_font(&"font"))
 	_caption.add_theme_font_size_override(&"font_size", Palette.FONT_BUTTON)
-	_caption.add_theme_color_override(&"font_color", Palette.INK)
+	_caption.add_theme_color_override(&"font_color", Palette.TEXT_PRIMARY)
 
 	# Skipped in the editor on purpose. A theme override applied by a @tool script
 	# is a real property change, so the editor serialises it into every scene that

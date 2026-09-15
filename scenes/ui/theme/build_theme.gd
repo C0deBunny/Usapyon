@@ -41,13 +41,13 @@ func _define_defaults(theme: Theme) -> void:
 
 ## The secondary button, and the look anything unstyled falls back to.
 func _define_button(theme: Theme) -> void:
-	theme.set_stylebox("normal", "Button", Palette.box(Palette.SURFACE, Palette.RADIUS_BUTTON, true))
-	theme.set_stylebox("pressed", "Button", Palette.box(Palette.SURFACE_PRESSED, Palette.RADIUS_BUTTON, false))
-	theme.set_stylebox("disabled", "Button", Palette.box(Palette.SURFACE_DISABLED, Palette.RADIUS_BUTTON, false))
+	theme.set_stylebox("normal", "Button", Palette.box(Palette.SECONDARY, Palette.RADIUS_BUTTON, true))
+	theme.set_stylebox("pressed", "Button", Palette.box(Palette.SECONDARY_PRESSED, Palette.RADIUS_BUTTON, false))
+	theme.set_stylebox("disabled", "Button", Palette.box(Palette.DISABLED, Palette.RADIUS_BUTTON, false))
 
-	theme.set_color("font_color", "Button", Palette.INK)
-	theme.set_color("font_pressed_color", "Button", Palette.INK)
-	theme.set_color("font_disabled_color", "Button", Palette.INK_MUTED)
+	theme.set_color("font_color", "Button", Palette.TEXT_PRIMARY)
+	theme.set_color("font_pressed_color", "Button", Palette.TEXT_PRIMARY)
+	theme.set_color("font_disabled_color", "Button", Palette.TEXT_MUTED)
 
 	theme.set_font_size("font_size", "Button", Palette.FONT_BUTTON)
 	var button_font: Font = _load_font(FONT_BUTTON_PATH)
@@ -61,17 +61,18 @@ func _define_primary_button(theme: Theme) -> void:
 	theme.set_type_variation("PrimaryButton", "Button")
 	theme.set_stylebox("normal", "PrimaryButton", Palette.box(Palette.PRIMARY, Palette.RADIUS_BUTTON, true))
 	theme.set_stylebox("pressed", "PrimaryButton", Palette.box(Palette.PRIMARY_PRESSED, Palette.RADIUS_BUTTON, false))
-	theme.set_stylebox("disabled", "PrimaryButton", Palette.box(Palette.PRIMARY_DISABLED, Palette.RADIUS_BUTTON, false))
+	theme.set_stylebox("disabled", "PrimaryButton", Palette.box(Palette.DISABLED, Palette.RADIUS_BUTTON, false))
 	_silence_pointer_states(theme, "PrimaryButton")
 
 
-## A tile rests cream like a secondary button; its action colour is applied per
-## instance by tile_button.gd, because it differs per tile and only when held.
+## A tile is a secondary button in a squarer shape. A tile that wants a colour
+## while held gets it per instance from tile_button.gd, because it differs per
+## tile and only shows when held.
 func _define_tile_button(theme: Theme) -> void:
 	theme.set_type_variation("TileButton", "Button")
-	theme.set_stylebox("normal", "TileButton", Palette.tile_box(Palette.SURFACE, true))
-	theme.set_stylebox("pressed", "TileButton", Palette.tile_box(Palette.SURFACE_PRESSED, false))
-	theme.set_stylebox("disabled", "TileButton", Palette.tile_box(Palette.SURFACE_DISABLED, false))
+	theme.set_stylebox("normal", "TileButton", Palette.tile_box(Palette.SECONDARY, true))
+	theme.set_stylebox("pressed", "TileButton", Palette.tile_box(Palette.SECONDARY_PRESSED, false))
+	theme.set_stylebox("disabled", "TileButton", Palette.tile_box(Palette.DISABLED, false))
 	_silence_pointer_states(theme, "TileButton")
 
 
@@ -86,9 +87,9 @@ func _silence_pointer_states(theme: Theme, type: String) -> void:
 	theme.set_stylebox("hover", type, theme.get_stylebox("normal", type))
 	theme.set_stylebox("hover_pressed", type, theme.get_stylebox("pressed", type))
 	theme.set_stylebox("focus", type, StyleBoxEmpty.new())
-	theme.set_color("font_hover_color", type, Palette.INK)
-	theme.set_color("font_hover_pressed_color", type, Palette.INK)
-	theme.set_color("font_focus_color", type, Palette.INK)
+	theme.set_color("font_hover_color", type, Palette.TEXT_PRIMARY)
+	theme.set_color("font_hover_pressed_color", type, Palette.TEXT_PRIMARY)
+	theme.set_color("font_focus_color", type, Palette.TEXT_PRIMARY)
 
 
 func _load_font(path: String) -> Font:

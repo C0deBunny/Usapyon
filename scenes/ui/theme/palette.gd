@@ -12,29 +12,54 @@ extends RefCounted
 
 # --- Ink and surfaces --------------------------------------------------------
 
-## Outline and text. Every border in the UI is this colour.
-const INK: Color = Color("001558")
+## Every border in the UI is this colour.
+const OUTLINE: Color = Color("6b4e57")
+## Body and button text.
+const TEXT_PRIMARY: Color = Color("24345f")
 ## Text on a disabled control.
-const INK_MUTED: Color = Color("a9b0c6")
+const TEXT_MUTED: Color = Color("8a7279")
 
-## The resting fill of a secondary button and of an untouched tile.
-const SURFACE: Color = Color("fdf6f0")
-const SURFACE_PRESSED: Color = Color("f0e2dc")
-const SURFACE_DISABLED: Color = Color("dcd5d2")
+## Behind everything.
+const BACKGROUND: Color = Color("fff8f5")
+## A panel or card sitting on the background.
+const SURFACE: Color = Color("fffdf9")
 
-# --- Primary -----------------------------------------------------------------
+## The fill of any control that is switched off.
+const DISABLED: Color = Color("e8e0e1")
 
-const PRIMARY: Color = Color("f8a8c4")
-const PRIMARY_PRESSED: Color = Color("f06e96")
-const PRIMARY_DISABLED: Color = Color("e4cbd5")
+# --- Accents -----------------------------------------------------------------
+# The candy palette. Each colour comes with the darker fill it takes while held.
 
-# --- Tile accents ------------------------------------------------------------
-# Tiles rest cream and only take on their action's colour while held, so each of
-# these is a pressed fill and nothing else.
+const RED: Color = Color("f19595")
+const RED_PRESSED: Color = Color("ec7171")
 
-const ACCENT_FEED: Color = Color("fadce5")
-const ACCENT_PLAY: Color = Color("d8e6fb")
-const ACCENT_CLEAN: Color = Color("e6def7")
+const BLUE: Color = Color("c0d3eb")
+const BLUE_PRESSED: Color = Color("a1bde1")
+
+const PURPLE: Color = Color("ccb8de")
+const PURPLE_PRESSED: Color = Color("b89cd1")
+
+const GREEN: Color = Color("b8d9b8")
+const GREEN_PRESSED: Color = Color("9dcb9d")
+
+const ORANGE: Color = Color("f0b678")
+const ORANGE_PRESSED: Color = Color("eca253")
+
+const YELLOW: Color = Color("f9da7f")
+const YELLOW_PRESSED: Color = Color("f7cf58")
+
+const PINK: Color = Color("f6a6c1")
+const PINK_PRESSED: Color = Color("e986aa")
+
+# --- Buttons -----------------------------------------------------------------
+# The primary button is pink; the secondary button is the cream one, and a tile
+# is a secondary button in a squarer shape.
+
+const PRIMARY: Color = PINK
+const PRIMARY_PRESSED: Color = PINK_PRESSED
+
+const SECONDARY: Color = Color("fff1e8")
+const SECONDARY_PRESSED: Color = Color("f1ddd3")
 
 # --- Shadow ------------------------------------------------------------------
 # A button carries its shadow at rest and loses it while pressed, which reads as
@@ -68,7 +93,7 @@ const FONT_BUTTON: int = 44
 static func box(fill: Color, radius: int, with_shadow: bool) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
 	style.bg_color = fill
-	style.border_color = INK
+	style.border_color = OUTLINE
 	style.set_border_width_all(BORDER)
 	style.set_corner_radius_all(radius)
 	style.corner_detail = CORNER_DETAIL
