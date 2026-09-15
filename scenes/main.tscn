@@ -1,8 +1,11 @@
 [gd_scene format=3 uid="uid://dvadwjk1xer4a"]
 
 [ext_resource type="PackedScene" uid="uid://ctjgg7yn63oqd" path="res://scenes/bunny.tscn" id="1_o5qli"]
+[ext_resource type="PackedScene" path="res://scenes/hud.tscn" id="2_hud"]
+[ext_resource type="Script" path="res://scenes/main.gd" id="3_main"]
 
 [node name="Main" type="Control" unique_id=1201067421]
+script = ExtResource("3_main")
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -23,3 +26,5 @@ color = Color(0.89411765, 1, 1, 1)
 
 [node name="Bunny" parent="." unique_id=1281054210 instance=ExtResource("1_o5qli")]
 position = Vector2(540, 1050)
+
+[node name="Hud" parent="." instance=ExtResource("2_hud")]

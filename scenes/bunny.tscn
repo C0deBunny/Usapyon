@@ -24,7 +24,7 @@ length = 0.001
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("Visual:position")
+tracks/0/path = NodePath("Bounce/Visual:position")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
@@ -36,7 +36,7 @@ tracks/0/keys = {
 tracks/1/type = "value"
 tracks/1/imported = false
 tracks/1/enabled = true
-tracks/1/path = NodePath("Visual:scale")
+tracks/1/path = NodePath("Bounce/Visual:scale")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
@@ -48,7 +48,7 @@ tracks/1/keys = {
 tracks/2/type = "value"
 tracks/2/imported = false
 tracks/2/enabled = true
-tracks/2/path = NodePath("Visual/EarLeftPull/EarLeft:rotation")
+tracks/2/path = NodePath("Bounce/Visual/EarLeftPull/EarLeft:rotation")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
@@ -60,7 +60,7 @@ tracks/2/keys = {
 tracks/3/type = "value"
 tracks/3/imported = false
 tracks/3/enabled = true
-tracks/3/path = NodePath("Visual/EarRightPull/EarRight:rotation")
+tracks/3/path = NodePath("Bounce/Visual/EarRightPull/EarRight:rotation")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/keys = {
@@ -77,7 +77,7 @@ loop_mode = 1
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("Visual:position")
+tracks/0/path = NodePath("Bounce/Visual:position")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
@@ -89,7 +89,7 @@ tracks/0/keys = {
 tracks/1/type = "value"
 tracks/1/imported = false
 tracks/1/enabled = true
-tracks/1/path = NodePath("Visual:scale")
+tracks/1/path = NodePath("Bounce/Visual:scale")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
@@ -101,7 +101,7 @@ tracks/1/keys = {
 tracks/2/type = "value"
 tracks/2/imported = false
 tracks/2/enabled = true
-tracks/2/path = NodePath("Visual/EarLeftPull/EarLeft:rotation")
+tracks/2/path = NodePath("Bounce/Visual/EarLeftPull/EarLeft:rotation")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
@@ -113,7 +113,7 @@ tracks/2/keys = {
 tracks/3/type = "value"
 tracks/3/imported = false
 tracks/3/enabled = true
-tracks/3/path = NodePath("Visual/EarRightPull/EarRight:rotation")
+tracks/3/path = NodePath("Bounce/Visual/EarRightPull/EarRight:rotation")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/keys = {
@@ -132,74 +132,76 @@ _data = {
 [node name="Bunny" type="Node2D" unique_id=1281054210]
 script = ExtResource("9_bunny")
 
-[node name="Visual" type="Node2D" parent="." unique_id=1435582226]
+[node name="Bounce" type="Node2D" parent="."]
 
-[node name="EarRightPull" type="Node2D" parent="Visual" unique_id=550756198]
+[node name="Visual" type="Node2D" parent="Bounce" unique_id=1435582226]
+
+[node name="EarRightPull" type="Node2D" parent="Bounce/Visual" unique_id=550756198]
 position = Vector2(120, -160)
 script = ExtResource("10_ear")
 max_rotation_degrees = 20.0
 max_stretch = 1.07
 
-[node name="ClickArea" type="Area2D" parent="Visual/EarRightPull" unique_id=359175602]
+[node name="ClickArea" type="Area2D" parent="Bounce/Visual/EarRightPull" unique_id=359175602]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Visual/EarRightPull/ClickArea" unique_id=237446678]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Bounce/Visual/EarRightPull/ClickArea" unique_id=237446678]
 position = Vector2(55, -174)
 rotation = 0.21071717
 shape = SubResource("CapsuleShape2D_ear")
 
-[node name="Tip" type="Marker2D" parent="Visual/EarRightPull" unique_id=618149837]
+[node name="Tip" type="Marker2D" parent="Bounce/Visual/EarRightPull" unique_id=618149837]
 position = Vector2(40, -320)
 
-[node name="EarRight" type="Sprite2D" parent="Visual/EarRightPull" unique_id=2027213403]
+[node name="EarRight" type="Sprite2D" parent="Bounce/Visual/EarRightPull" unique_id=2027213403]
 position = Vector2(-120, 160)
 texture = ExtResource("2_ggkmg")
 
-[node name="EarLeftPull" type="Node2D" parent="Visual" unique_id=489657333]
+[node name="EarLeftPull" type="Node2D" parent="Bounce/Visual" unique_id=489657333]
 position = Vector2(-120, -160)
 script = ExtResource("10_ear")
 max_rotation_degrees = 20.0
 max_stretch = 1.07
 
-[node name="ClickArea" type="Area2D" parent="Visual/EarLeftPull" unique_id=222109138]
+[node name="ClickArea" type="Area2D" parent="Bounce/Visual/EarLeftPull" unique_id=222109138]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Visual/EarLeftPull/ClickArea" unique_id=1623820644]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Bounce/Visual/EarLeftPull/ClickArea" unique_id=1623820644]
 position = Vector2(-56, -168)
 rotation = -0.22719061
 shape = SubResource("CapsuleShape2D_ear")
 
-[node name="Tip" type="Marker2D" parent="Visual/EarLeftPull" unique_id=38802122]
+[node name="Tip" type="Marker2D" parent="Bounce/Visual/EarLeftPull" unique_id=38802122]
 position = Vector2(-40, -320)
 
-[node name="EarLeft" type="Sprite2D" parent="Visual/EarLeftPull" unique_id=1259995075]
+[node name="EarLeft" type="Sprite2D" parent="Bounce/Visual/EarLeftPull" unique_id=1259995075]
 position = Vector2(120, 160)
 texture = ExtResource("3_l787c")
 
-[node name="Body" type="Sprite2D" parent="Visual" unique_id=950211253]
+[node name="Body" type="Sprite2D" parent="Bounce/Visual" unique_id=950211253]
 texture = ExtResource("1_kdyof")
 
-[node name="Face" type="Sprite2D" parent="Visual" unique_id=324641338]
+[node name="Face" type="Sprite2D" parent="Bounce/Visual" unique_id=324641338]
 texture = ExtResource("4_qchqy")
 
-[node name="EyeLeft" type="Sprite2D" parent="Visual" unique_id=1728405519]
+[node name="EyeLeft" type="Sprite2D" parent="Bounce/Visual" unique_id=1728405519]
 texture = ExtResource("5_l787c")
 script = ExtResource("7_mfjs7")
 closed_texture = ExtResource("8_wqkoa")
 
-[node name="ClickArea" type="Area2D" parent="Visual/EyeLeft" unique_id=1102295215]
+[node name="ClickArea" type="Area2D" parent="Bounce/Visual/EyeLeft" unique_id=1102295215]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Visual/EyeLeft/ClickArea" unique_id=1940269616]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Bounce/Visual/EyeLeft/ClickArea" unique_id=1940269616]
 position = Vector2(-157, 77)
 scale = Vector2(0.8, 1)
 shape = SubResource("CircleShape2D_gcsqm")
 
-[node name="EyeRight" type="Sprite2D" parent="Visual" unique_id=1391211464]
+[node name="EyeRight" type="Sprite2D" parent="Bounce/Visual" unique_id=1391211464]
 texture = ExtResource("6_qchqy")
 script = ExtResource("7_mfjs7")
 closed_texture = ExtResource("8_1ypmr")
 
-[node name="ClickArea" type="Area2D" parent="Visual/EyeRight" unique_id=136823869]
+[node name="ClickArea" type="Area2D" parent="Bounce/Visual/EyeRight" unique_id=136823869]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Visual/EyeRight/ClickArea" unique_id=1445037497]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Bounce/Visual/EyeRight/ClickArea" unique_id=1445037497]
 position = Vector2(157, 77)
 scale = Vector2(0.8, 1)
 shape = SubResource("CircleShape2D_gcsqm")

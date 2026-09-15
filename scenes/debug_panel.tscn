@@ -1,0 +1,172 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/debug_panel.gd" id="1_debug"]
+
+[node name="DebugPanel" type="CanvasLayer"]
+layer = 2
+script = ExtResource("1_debug")
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="ToggleButton" type="Button" parent="Root"]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -160.0
+offset_top = 40.0
+offset_right = -30.0
+offset_bottom = 170.0
+grow_horizontal = 0
+theme_override_font_sizes/font_size = 40
+text = "DBG"
+
+[node name="Panel" type="PanelContainer" parent="Root"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -660.0
+offset_top = 190.0
+offset_right = -30.0
+offset_bottom = 1150.0
+grow_horizontal = 0
+
+[node name="Margin" type="MarginContainer" parent="Root/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="Rows" type="VBoxContainer" parent="Root/Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Root/Panel/Margin/Rows"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 38
+text = "USAPYON DEBUG"
+
+[node name="HungerReadout" type="Label" parent="Root/Panel/Margin/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 34
+text = "Hunger: 70.0"
+
+[node name="HungerRow" type="HBoxContainer" parent="Root/Panel/Margin/Rows"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="HungerDown" type="Button" parent="Root/Panel/Margin/Rows/HungerRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 84)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 34
+text = "-10"
+
+[node name="HungerUp" type="Button" parent="Root/Panel/Margin/Rows/HungerRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 84)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 34
+text = "+10"
+
+[node name="TimeLabel" type="Label" parent="Root/Panel/Margin/Rows"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 30
+text = "TIME"
+
+[node name="TimeRow" type="HBoxContainer" parent="Root/Panel/Margin/Rows"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Plus1h" type="Button" parent="Root/Panel/Margin/Rows/TimeRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 84)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 32
+text = "+1h"
+
+[node name="Plus6h" type="Button" parent="Root/Panel/Margin/Rows/TimeRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 84)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 32
+text = "+6h"
+
+[node name="Plus24h" type="Button" parent="Root/Panel/Margin/Rows/TimeRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 84)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 32
+text = "+24h"
+
+[node name="SaveLabel" type="Label" parent="Root/Panel/Margin/Rows"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 30
+text = "SAVE"
+
+[node name="SaveState" type="Button" parent="Root/Panel/Margin/Rows"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 84)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Save Current State"
+
+[node name="ReloadFromDisk" type="Button" parent="Root/Panel/Margin/Rows"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 84)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Reload From Disk"
+
+[node name="ResetSave" type="Button" parent="Root/Panel/Margin/Rows"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 84)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Reset Save"
+
+[node name="PresetLabel" type="Label" parent="Root/Panel/Margin/Rows"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 30
+text = "PRESETS"
+
+[node name="PresetRow" type="HBoxContainer" parent="Root/Panel/Margin/Rows"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="PresetFresh" type="Button" parent="Root/Panel/Margin/Rows/PresetRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 84)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 32
+text = "Fresh"
+
+[node name="PresetHungry" type="Button" parent="Root/Panel/Margin/Rows/PresetRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 84)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 32
+text = "Hungry"

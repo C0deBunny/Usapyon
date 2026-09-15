@@ -18,6 +18,10 @@ config/icon="uid://dnowv18cim5w8"
 [autoload]
 
 Music="*res://autoloads/music.tscn"
+; GameState must come before SaveManager — autoload order is instantiation order,
+; and SaveManager._ready() writes into GameState.
+GameState="*res://autoloads/game_state.gd"
+SaveManager="*res://autoloads/save_manager.gd"
 
 [display]
 

@@ -51,6 +51,15 @@ func open() -> void:
 	texture = _neutral_texture
 
 
+## Closes the eye and keeps it shut for `seconds` — the happy eyes during a
+## feeding hop. It borrows the release timer rather than adding a state, because
+## is_busy() already watches that timer, so blinking already knows to leave the
+## eye alone for exactly this long.
+func hold_shut(seconds: float) -> void:
+	close()
+	_release_timer.start(seconds)
+
+
 ## Only presses arrive here — a release that happens off the eye would never
 ## reach the Area2D, so releases are caught globally in _unhandled_input.
 func _on_click_area_input_event(_viewport: Node, event: InputEvent, _shape_index: int) -> void:
