@@ -2,3 +2,6 @@
 .godot/
 builds/
 /android/
+
+# Photoshop working files (large binaries)
+*.psd
