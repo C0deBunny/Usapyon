@@ -11,7 +11,10 @@ extends Node
 ## one — and a file that will not parse falls back to the backup. "Your pet
 ## vanished" is the worst failure this game has.
 
-const VERSION: int = 1
+## Bumped to 2 when cleanliness and happiness arrived. Fields were only added,
+## never redefined, so a version-1 save still opens — load_game() reads its
+## absent keys as a new Usapyon's starting value.
+const VERSION: int = 2
 
 ## Debug and release never share a file, so a deliberately strange test state
 ## cannot contaminate real progression — see docs/conventions.md.
@@ -35,6 +38,8 @@ func save() -> void:
 	var data: Dictionary = {
 		"version": VERSION,
 		"hunger": GameState.hunger,
+		"cleanliness": GameState.cleanliness,
+		"happiness": GameState.happiness,
 		"last_ticked_at": GameState.last_ticked_at,
 	}
 
@@ -70,7 +75,12 @@ func load_game() -> void:
 		save()
 		return
 
-	GameState.hunger = float(data.get("hunger", BunnyCareRules.STARTING_HUNGER))
+	# A version-1 save has no cleanliness or happiness. They read as a fresh
+	# Usapyon's starting value and then decay with elapsed time like everything
+	# else, rather than arriving at a full bar nothing earned.
+	GameState.hunger = float(data.get("hunger", BunnyCareRules.STARTING_VALUE))
+	GameState.cleanliness = float(data.get("cleanliness", BunnyCareRules.STARTING_VALUE))
+	GameState.happiness = float(data.get("happiness", BunnyCareRules.STARTING_VALUE))
 	# A file without a timestamp is treated as having just been written, rather
 	# than as 1970 followed by fifty years of decay.
 	GameState.last_ticked_at = int(data.get("last_ticked_at", GameState.now()))

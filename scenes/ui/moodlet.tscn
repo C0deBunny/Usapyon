@@ -1,0 +1,41 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/moodlet.gd" id="1_moodlet"]
+
+[node name="Moodlet" type="HBoxContainer"]
+offset_right = 360.0
+offset_bottom = 60.0
+theme_override_constants/separation = 18
+script = ExtResource("1_moodlet")
+
+[node name="Icon" type="TextureRect" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Text" type="VBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_constants/separation = 6
+
+[node name="StatName" type="Label" parent="Text"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.141176, 0.203922, 0.372549, 1)
+theme_override_font_sizes/font_size = 26
+text = "Hunger"
+
+[node name="Bar" type="ProgressBar" parent="Text"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(258, 22)
+layout_mode = 2
+mouse_filter = 2
+value = 70.0
+show_percentage = false

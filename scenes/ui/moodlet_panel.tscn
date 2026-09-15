@@ -1,0 +1,91 @@
+[gd_scene format=3 uid="uid://k7olapg62b2a"]
+
+[ext_resource type="Script" uid="uid://biu8x7kghe6ch" path="res://scenes/ui/moodlet_panel.gd" id="1_panel"]
+[ext_resource type="PackedScene" path="res://scenes/ui/moodlet.tscn" id="2_moodlet"]
+[ext_resource type="Texture2D" uid="uid://ti2xdyqt48nl" path="res://assets/sprites/ui/carrot.png" id="3_carrot"]
+[ext_resource type="Texture2D" uid="uid://dcqowpitjqcn0" path="res://assets/sprites/ui/sponge.png" id="4_sponge"]
+[ext_resource type="Texture2D" uid="uid://dqg12r40nrpps" path="res://assets/sprites/ui/heart.png" id="5_heart"]
+[ext_resource type="Texture2D" uid="uid://cjyt6pe7sd8yi" path="res://assets/sprites/ui/bunny_happy.png" id="6_bunny"]
+[ext_resource type="Texture2D" uid="uid://dw7stljepkcpw" path="res://assets/sprites/ui/bunny_sad.png" id="7_sad"]
+[ext_resource type="Texture2D" uid="uid://dj4sma4ilkea2" path="res://assets/sprites/ui/bunny_angry.png" id="8_angry"]
+[ext_resource type="Script" uid="uid://sjt71akvqspo" path="res://scenes/ui/tail.gd" id="9_tail"]
+
+[node name="MoodletPanel" type="Control" unique_id=1825574131]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_panel")
+face_happy = ExtResource("6_bunny")
+face_sad = ExtResource("7_sad")
+face_angry = ExtResource("8_angry")
+
+[node name="Popover" type="Control" parent="." unique_id=1131049095]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 0
+offset_left = 48.0
+offset_top = 248.0
+offset_right = 48.0
+offset_bottom = 248.0
+mouse_filter = 2
+
+[node name="Panel" type="PanelContainer" parent="Popover" unique_id=494456551]
+layout_mode = 1
+offset_top = -20.0
+offset_right = 336.0
+offset_bottom = 216.0
+
+[node name="Moodlets" type="VBoxContainer" parent="Popover/Panel" unique_id=1576819981]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 22
+
+[node name="HungerMoodlet" parent="Popover/Panel/Moodlets" unique_id=751704901 instance=ExtResource("2_moodlet")]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 18
+icon_texture = ExtResource("3_carrot")
+fill = Color(0.941176, 0.713725, 0.470588, 1)
+
+[node name="CleanlinessMoodlet" parent="Popover/Panel/Moodlets" unique_id=169988416 instance=ExtResource("2_moodlet")]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 18
+stat_name = "Cleanliness"
+icon_texture = ExtResource("4_sponge")
+fill = Color(0.717647, 0.803922, 0.94902, 1)
+
+[node name="HappinessMoodlet" parent="Popover/Panel/Moodlets" unique_id=763480631 instance=ExtResource("2_moodlet")]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 18
+stat_name = "Happiness"
+icon_texture = ExtResource("5_heart")
+fill = Color(0.945098, 0.584314, 0.584314, 1)
+
+[node name="Tail" type="Control" parent="Popover" unique_id=1807557889]
+custom_minimum_size = Vector2(44, 22)
+layout_mode = 1
+anchors_preset = 0
+offset_left = 58.0
+offset_top = -36.585
+offset_right = 102.0
+offset_bottom = -14.584999
+mouse_filter = 2
+script = ExtResource("9_tail")
+
+[node name="MoodletButton" type="Button" parent="." unique_id=690260519]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(160, 160)
+layout_mode = 1
+offset_left = 48.0
+offset_top = 48.0
+offset_right = 208.0
+offset_bottom = 208.0
+theme_type_variation = &"IconButton"
+icon = ExtResource("6_bunny")
+expand_icon = true

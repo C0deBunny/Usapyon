@@ -37,7 +37,7 @@ anchor_right = 1.0
 offset_left = -660.0
 offset_top = 190.0
 offset_right = -30.0
-offset_bottom = 1150.0
+offset_bottom = 1500.0
 grow_horizontal = 0
 
 [node name="Margin" type="MarginContainer" parent="Root/Panel"]
@@ -77,6 +77,60 @@ theme_override_font_sizes/font_size = 34
 text = "-10"
 
 [node name="HungerUp" type="Button" parent="Root/Panel/Margin/Rows/HungerRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 84)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 34
+text = "+10"
+
+[node name="CleanlinessReadout" type="Label" parent="Root/Panel/Margin/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 34
+text = "Cleanliness: 70.0"
+
+[node name="CleanlinessRow" type="HBoxContainer" parent="Root/Panel/Margin/Rows"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="CleanlinessDown" type="Button" parent="Root/Panel/Margin/Rows/CleanlinessRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 84)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 34
+text = "-10"
+
+[node name="CleanlinessUp" type="Button" parent="Root/Panel/Margin/Rows/CleanlinessRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 84)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 34
+text = "+10"
+
+[node name="HappinessReadout" type="Label" parent="Root/Panel/Margin/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 34
+text = "Happiness: 70.0"
+
+[node name="HappinessRow" type="HBoxContainer" parent="Root/Panel/Margin/Rows"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="HappinessDown" type="Button" parent="Root/Panel/Margin/Rows/HappinessRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 84)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 34
+text = "-10"
+
+[node name="HappinessUp" type="Button" parent="Root/Panel/Margin/Rows/HappinessRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 84)
 layout_mode = 2
@@ -160,13 +214,13 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 84)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 32
+theme_override_font_sizes/font_size = 30
 text = "Fresh"
 
-[node name="PresetHungry" type="Button" parent="Root/Panel/Margin/Rows/PresetRow"]
+[node name="PresetNeglected" type="Button" parent="Root/Panel/Margin/Rows/PresetRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 84)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 32
-text = "Hungry"
+theme_override_font_sizes/font_size = 30
+text = "Neglected"

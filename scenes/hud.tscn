@@ -4,6 +4,9 @@
 [ext_resource type="Theme" path="res://scenes/ui/theme/usapyon_theme.tres" id="2_theme"]
 [ext_resource type="PackedScene" path="res://scenes/ui/tile_button.tscn" id="3_tile"]
 [ext_resource type="Texture2D" uid="uid://ti2xdyqt48nl" path="res://assets/sprites/ui/carrot.png" id="4_carrot"]
+[ext_resource type="Texture2D" path="res://assets/sprites/ui/sponge.png" id="5_sponge"]
+[ext_resource type="Texture2D" path="res://assets/sprites/ui/heart.png" id="6_heart"]
+[ext_resource type="PackedScene" path="res://scenes/ui/moodlet_panel.tscn" id="7_moodlets"]
 
 [node name="Hud" type="CanvasLayer" unique_id=1322479425]
 script = ExtResource("1_hud")
@@ -17,35 +20,6 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 theme = ExtResource("2_theme")
-
-[node name="HungerPanel" type="VBoxContainer" parent="Root" unique_id=1525064699]
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -360.0
-offset_top = 50.0
-offset_right = 360.0
-offset_bottom = 190.0
-grow_horizontal = 2
-mouse_filter = 2
-theme_override_constants/separation = 16
-
-[node name="HungerValue" type="Label" parent="Root/HungerPanel" unique_id=127344846]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(0.141176, 0.203922, 0.372549, 1)
-theme_override_font_sizes/font_size = 48
-text = "Hunger 70"
-horizontal_alignment = 1
-
-[node name="HungerBar" type="ProgressBar" parent="Root/HungerPanel" unique_id=1277949883]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 56)
-layout_mode = 2
-mouse_filter = 2
-value = 70.0
-show_percentage = false
 
 [node name="ActionBar" type="MarginContainer" parent="Root" unique_id=1483709279]
 layout_mode = 1
@@ -71,4 +45,27 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(280, 280)
 layout_mode = 2
 size_flags_vertical = 4
+caption = "Feed"
 icon_texture = ExtResource("4_carrot")
+accent = Color(0.925490, 0.635294, 0.325490, 1)
+
+[node name="CleanButton" parent="Root/ActionBar/Tiles" instance=ExtResource("3_tile")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(280, 280)
+layout_mode = 2
+size_flags_vertical = 4
+caption = "Clean"
+icon_texture = ExtResource("5_sponge")
+accent = Color(0.580392, 0.709804, 0.925490, 1)
+
+[node name="PlayButton" parent="Root/ActionBar/Tiles" instance=ExtResource("3_tile")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(280, 280)
+layout_mode = 2
+size_flags_vertical = 4
+caption = "Play"
+icon_texture = ExtResource("6_heart")
+accent = Color(0.925490, 0.443137, 0.443137, 1)
+
+[node name="Moodlets" parent="Root" instance=ExtResource("7_moodlets")]
+layout_mode = 1

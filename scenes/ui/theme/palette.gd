@@ -69,6 +69,13 @@ const SHADOW: Color = Color(0.169, 0.227, 0.404, 0.18)
 const SHADOW_SIZE: int = 10
 const SHADOW_OFFSET: Vector2 = Vector2(0, 7)
 
+# --- Panels ------------------------------------------------------------------
+
+## Corner radius of a panel. Close to a tile's, because the moodlet popover is
+## not much bigger than one and a far rounder corner would read as a different
+## family.
+const RADIUS_PANEL: int = 28
+
 # --- Geometry ----------------------------------------------------------------
 
 const BORDER: int = 4
@@ -83,10 +90,60 @@ const TILE_MIN_SIZE: Vector2 = Vector2(280, 280)
 ## Drawn size of a tile's icon. The source art is 256²; this is what it renders at.
 const ICON_SIZE: Vector2 = Vector2(144, 144)
 
+## A chrome button — the one that opens the moodlet popover, and whatever
+## settings or shop buttons follow it. An icon and nothing else, still
+## thumb-sized.
+const ICON_BUTTON_SIZE: Vector2 = Vector2(160, 160)
+## The icon inside one, smaller than the tile's so it keeps its margin.
+const ICON_BUTTON_ICON_SIZE: Vector2 = Vector2(104, 104)
+
+# --- Moodlets ----------------------------------------------------------------
+# Measured off the reference sheet and then taken a little further: the popover
+# is a glanceable corner readout, not a screen, so everything in it is smaller
+# and thinner than a control the thumb has to hit.
+
+## A stat bar. Thin and fully rounded, so it reads as a capsule rather than as a
+## progress meter waiting on a download.
+const BAR_HEIGHT: int = 22
+const RADIUS_BAR: int = 11
+## A bar's outline, thinner than a button's — at 22px tall the standard 4px
+## border would leave more edge than fill.
+const BORDER_BAR: int = 3
+## How much bar there is to watch move. The popover's width follows from this.
+const BAR_MIN_WIDTH: int = 258
+
+## The icon beside a stat's name.
+const MOODLET_ICON_SIZE: Vector2 = Vector2(60, 60)
+## Icon to text.
+const MOODLET_ICON_GAP: int = 18
+## Stat name to its bar.
+const MOODLET_LABEL_GAP: int = 6
+## Between the three rows.
+const MOODLET_ROW_GAP: int = 22
+
+## How long a bar takes to slide to a new value, and how long it waits first.
+##
+## The wait exists because a care action pops the popover open: without it the
+## first third of the fill happens while the panel is still scaling up, which is
+## the one moment the player is meant to see the bar move.
+const BAR_TWEEN_TIME: float = 0.4
+const BAR_TWEEN_DELAY: float = 0.15
+
+# --- The popover's tail ------------------------------------------------------
+# Drawn, not textured — see tail.gd. It sits over the panel's top border and
+# opens the bubble towards the button above it.
+
+## How far the tail sticks up out of the panel, and how wide its base is.
+const TAIL_HEIGHT: int = 18
+const TAIL_WIDTH: int = 44
+
 # --- Type scale --------------------------------------------------------------
 
 const FONT_BODY: int = 40
 const FONT_BUTTON: int = 44
+## A stat's name in the popover. Much smaller than body text — the popover is
+## read at a glance, not at arm's length like a button caption.
+const FONT_MOODLET: int = 26
 
 
 ## The one description of a button surface in the project.
@@ -113,4 +170,41 @@ static func tile_box(fill: Color, with_shadow: bool) -> StyleBoxFlat:
 	var style := box(fill, RADIUS_TILE, with_shadow)
 	style.content_margin_top = 32.0
 	style.content_margin_bottom = 32.0
+	return style
+
+
+## An icon button is a tile with its margins pulled in — there is no caption to
+## leave room for, and at 160² the tile's margins would leave no icon.
+static func icon_button_box(fill: Color, with_shadow: bool) -> StyleBoxFlat:
+	var style := box(fill, RADIUS_TILE, with_shadow)
+	style.content_margin_left = 20.0
+	style.content_margin_right = 20.0
+	style.content_margin_top = 20.0
+	style.content_margin_bottom = 20.0
+	return style
+
+
+## A card sitting on the background. Same ink and shadow as a button, so the
+## popover reads as part of the same family.
+static func panel_box(fill: Color) -> StyleBoxFlat:
+	var style := box(fill, RADIUS_PANEL, true)
+	style.content_margin_left = 24.0
+	style.content_margin_right = 24.0
+	style.content_margin_top = 20.0
+	style.content_margin_bottom = 20.0
+	return style
+
+
+## One half of a stat bar — the empty track or the coloured fill.
+##
+## No shadow and no content margins: a bar holds nothing, and a shadow under the
+## fill would smear along the track as it slides. The fill is built per instance
+## by moodlet.gd, because its colour is what distinguishes one stat from another.
+static func bar_box(fill: Color) -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+	style.bg_color = fill
+	style.border_color = OUTLINE
+	style.set_border_width_all(BORDER_BAR)
+	style.set_corner_radius_all(RADIUS_BAR)
+	style.corner_detail = CORNER_DETAIL
 	return style

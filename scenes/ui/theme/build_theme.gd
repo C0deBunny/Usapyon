@@ -22,6 +22,9 @@ func _initialize() -> void:
 	_define_button(theme)
 	_define_primary_button(theme)
 	_define_tile_button(theme)
+	_define_icon_button(theme)
+	_define_panel(theme)
+	_define_progress_bar(theme)
 	_define_containers(theme)
 
 	var error: Error = ResourceSaver.save(theme, OUTPUT_PATH)
@@ -74,6 +77,34 @@ func _define_tile_button(theme: Theme) -> void:
 	theme.set_stylebox("pressed", "TileButton", Palette.tile_box(Palette.SECONDARY_PRESSED, false))
 	theme.set_stylebox("disabled", "TileButton", Palette.tile_box(Palette.DISABLED, false))
 	_silence_pointer_states(theme, "TileButton")
+
+
+## Chrome: an icon and no caption. Same family as a tile, tighter margins,
+## because at 160² a tile's margins would leave nowhere for the icon to go.
+func _define_icon_button(theme: Theme) -> void:
+	theme.set_type_variation("IconButton", "Button")
+	theme.set_stylebox("normal", "IconButton", Palette.icon_button_box(Palette.SECONDARY, true))
+	theme.set_stylebox("pressed", "IconButton", Palette.icon_button_box(Palette.SECONDARY_PRESSED, false))
+	theme.set_stylebox("disabled", "IconButton", Palette.icon_button_box(Palette.DISABLED, false))
+	_silence_pointer_states(theme, "IconButton")
+
+
+## Any card sitting on the background — the moodlet modal today. Without this a
+## PanelContainer draws Godot's default grey box, with no error to explain it.
+func _define_panel(theme: Theme) -> void:
+	theme.set_stylebox("panel", "PanelContainer", Palette.panel_box(Palette.SURFACE))
+	theme.set_stylebox("panel", "Panel", Palette.panel_box(Palette.SURFACE))
+
+
+## A stat bar. Only the empty track is defined here — the coloured fill is what
+## tells one stat from another, so moodlet.gd builds it per instance from
+## Palette, exactly as tile_button.gd does for a tile's pressed colour.
+##
+## The fill is still defined, in the neutral secondary, so a bare ProgressBar
+## dropped anywhere looks deliberate rather than broken.
+func _define_progress_bar(theme: Theme) -> void:
+	theme.set_stylebox("background", "ProgressBar", Palette.bar_box(Palette.DISABLED))
+	theme.set_stylebox("fill", "ProgressBar", Palette.bar_box(Palette.SECONDARY_PRESSED))
 
 
 func _define_containers(theme: Theme) -> void:
